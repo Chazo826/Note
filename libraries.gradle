@@ -1,0 +1,55 @@
+def libraries = [:]
+
+def androidx = [:]
+
+def base = [:]
+base.core = "androidx.core:core-ktx:$versions.androidx.base.core"
+base.appcompat = "androidx.appcompat:appcompat:$versions.androidx.base.appcompat"
+base.constraintlayout = "androidx.constraintlayout:constraintlayout:$versions.androidx.base.constraintlayout"
+androidx.base = base
+
+def navigation = [:]
+navigation.fragment = "androidx.navigation:navigation-fragment-ktx:$versions.androidx.navigation"
+navigation.ui = "androidx.navigation:navigation-ui-ktx:$versions.androidx.navigation"
+androidx.navigation = navigation
+
+def lifecycle = [:]
+lifecycle.common = "androidx.lifecycle:lifecycle-common-java8:$versions.androidx.lifecycle"
+lifecycle.extensions = "androidx.lifecycle:lifecycle-extensions:$versions.androidx.lifecycle"
+androidx.lifecycle = lifecycle
+
+libraries.androidx = androidx
+
+def google = [:]
+google.material = "com.google.android.material:material:$versions.google.material"
+libraries.google = google
+
+// dagger: https://github.com/google/dagger
+def dagger2 = [:]
+dagger2.core = "com.google.dagger:dagger:$versions.dagger2"
+dagger2.android = "com.google.dagger:dagger-android:$versions.dagger2"
+dagger2.androidx = "com.google.dagger:dagger-android-support:$versions.dagger2"
+dagger2.compiler = "com.google.dagger:dagger-compiler:$versions.dagger2"
+dagger2.processor = "com.google.dagger:dagger-android-processor:$versions.dagger2"
+libraries.dagger2 = dagger2
+
+// rxjava2: https://github.com/ReactiveX/RxJava/tree/2.x
+// rxkotlin: https://github.com/ReactiveX/RxKotlin
+// rxandroid: https://github.com/ReactiveX/RxAndroid
+def rxjava2 = [:]
+rxjava2.rxjava = "io.reactivex.rxjava2:rxjava:$versions.rxjava2.rxjava"
+rxjava2.kotlin = "io.reactivex.rxjava2:rxkotlin:$versions.rxjava2.kotlin"
+rxjava2.android = "io.reactivex.rxjava2:rxandroid:$versions.rxjava2.android"
+libraries.rxjava2 = rxjava2
+
+def test = [:]
+test.junit = "junit:junit:$versions.test.junit"
+
+def test_androidx = [:]
+test_androidx.junit = "androidx.test.ext:junit:$versions.test.androidx.junit"
+test_androidx.espresso = "androidx.test.espresso:espresso-core:$versions.test.androidx.espresso"
+test.androidx = test_androidx
+
+libraries.test = test
+
+ext.libraries = libraries

@@ -1,0 +1,30 @@
+def application = [:]
+application.id = "com.chazo826.note"
+
+def build = [:]
+build.tools = "29.0.2"
+build.gradle = "com.android.tools.build:gradle:$versions.build.gradle"
+build.kotlin = "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.build.kotlin"
+application.build = build
+
+def config = [:]
+
+def sdk = [:]
+sdk.compile = 29
+sdk.min = 21
+sdk.target = 29
+config.sdk = sdk
+
+def version = [:]
+version.code = 1
+version.name = "1.0.0.0"
+config.version = version
+
+application.config = config
+
+def language = [:]
+language.java = JavaVersion.VERSION_1_8
+language.kotlin = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versions.build.kotlin"
+application.language = language
+
+ext.application = application
