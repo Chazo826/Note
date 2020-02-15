@@ -47,6 +47,13 @@ dependencies {
 
     implementation libraries.google.material
 
+    implementation libraries.dagger2.core
+    kapt libraries.dagger2.compiler
+
+    implementation libraries.dagger2.android
+    implementation libraries.dagger2.androidx
+    kapt libraries.dagger2.processor
+
     testImplementation libraries.test.androidx.junit
     androidTestImplementation libraries.test.androidx.junit
     androidTestImplementation libraries.test.androidx.espresso
