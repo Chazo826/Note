@@ -18,6 +18,11 @@ lifecycle.common = "androidx.lifecycle:lifecycle-common-java8:$versions.androidx
 lifecycle.extensions = "androidx.lifecycle:lifecycle-extensions:$versions.androidx.lifecycle"
 androidx.lifecycle = lifecycle
 
+def room = [:]
+room.core = "androidx.room:room-runtime:$versions.androidx.room"
+room.compiler = "androidx.room:room-compiler:$versions.androidx.room"
+androidx.room = room
+
 libraries.androidx = androidx
 
 def google = [:]

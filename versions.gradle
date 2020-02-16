@@ -8,12 +8,14 @@ versions.build = build
 def androidx = [:]
 androidx.navigation = "2.1.0"
 androidx.lifecycle = "2.1.0"
+androidx.room = "2.2.2"
 
 def base = [:]
 base.core = "1.2.0"
 base.constraintlayout = "1.1.3"
 base.appcompat = "1.1.0"
 androidx.base = base
+
 
 versions.androidx = androidx
 
