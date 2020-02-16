@@ -12,8 +12,6 @@ buildscript {
     dependencies {
         classpath application.build.gradle
         classpath application.build.kotlin
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
     }
 }
 
