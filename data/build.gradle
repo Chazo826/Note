@@ -1,0 +1,48 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+
+android {
+    compileSdkVersion application.config.sdk.compile
+    buildToolsVersion application.build.tools
+
+
+    defaultConfig {
+        minSdkVersion application.config.sdk.min
+        targetSdkVersion application.config.sdk.target
+        versionCode application.config.version.code
+        versionName application.config.version.name
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles 'consumer-rules.pro'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility application.language.java
+        targetCompatibility application.language.java
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    api project(":core")
+    implementation application.language.kotlin
+
+    implementation libraries.dagger2.core
+    kapt libraries.dagger2.compiler
+
+    implementation libraries.androidx.room.core
+    kapt libraries.androidx.room.compiler
+
+    testImplementation libraries.test.androidx.junit
+    androidTestImplementation libraries.test.androidx.junit
+    androidTestImplementation libraries.test.androidx.espresso
+}
