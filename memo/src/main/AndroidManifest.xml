@@ -3,7 +3,7 @@
     package="com.chazo826.memo">
 
     <application>
-        <activity android:name=".main.MemoActivity"/>
+        <activity android:name=".memo.MemoActivity"/>
     </application>
 
 </manifest>
