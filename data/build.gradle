@@ -42,6 +42,8 @@ dependencies {
     implementation libraries.androidx.room.core
     kapt libraries.androidx.room.compiler
 
+    implementation libraries.androidx.paging.core
+
     testImplementation libraries.test.androidx.junit
     androidTestImplementation libraries.test.androidx.junit
     androidTestImplementation libraries.test.androidx.espresso

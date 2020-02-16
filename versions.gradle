@@ -9,6 +9,7 @@ def androidx = [:]
 androidx.navigation = "2.1.0"
 androidx.lifecycle = "2.1.0"
 androidx.room = "2.2.2"
+androidx.paging = "2.1.0"
 
 def base = [:]
 base.core = "1.2.0"

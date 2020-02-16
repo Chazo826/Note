@@ -23,6 +23,10 @@ room.core = "androidx.room:room-runtime:$versions.androidx.room"
 room.compiler = "androidx.room:room-compiler:$versions.androidx.room"
 androidx.room = room
 
+def paging = [:]
+paging.core = "androidx.paging:paging-runtime:$versions.androidx.paging"
+androidx.paging = paging
+
 libraries.androidx = androidx
 
 def google = [:]
