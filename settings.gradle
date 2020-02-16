@@ -1,2 +1,2 @@
-include ':app', ':memo', ':core'
+include ':app', ':memo', ':core', ':data'
 rootProject.name='Note'
