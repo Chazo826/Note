@@ -35,6 +35,8 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation application.language.kotlin
 
+    api project(":core")
+
     implementation libraries.androidx.base.core
     implementation libraries.androidx.base.appcompat
     implementation libraries.androidx.base.constraintlayout
