@@ -32,6 +32,7 @@ android {
 dependencies {
     api project(":core")
     api project(":memo")
+    api project(":data")
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation application.language.kotlin
 
