@@ -10,5 +10,5 @@ data class Memo(
     val title: String?,
     val date: Long?,
     val content: String?,
-    val pictures: List<String>?
+    val pictures: List<String>? = null
 )

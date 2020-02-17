@@ -1,20 +1,24 @@
 package com.chazo826.data.memo.cache
 
 import androidx.paging.DataSource
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Query
+import androidx.paging.PositionalDataSource
+import androidx.room.*
 import com.chazo826.data.memo.model.Memo
 
 @Dao
 interface MemoDao {
 
     @Query("SELECT * FROM memo order BY date DESC")
-    fun fetchMemoByDate(): DataSource<Int, Memo>
+    fun fetchMemosByDate(): PositionalDataSource<Memo>
+
+    @Query("SELECT * FROM memo WHERE uid == :uid")
+    fun fetchMemo(uid: Long): Memo
 
     @Insert
     fun insert(memo: Memo)
+
+    @Update
+    fun update(memo: Memo)
 
     @Delete
     fun delete(memo: Memo)
