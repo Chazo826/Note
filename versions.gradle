@@ -22,6 +22,7 @@ versions.androidx = androidx
 
 def google = [:]
 google.material = "1.1.0"
+google.gson = "2.8.6"
 versions.google = google
 
 versions.dagger2 = "2.25.2"

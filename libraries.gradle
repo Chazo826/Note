@@ -31,6 +31,7 @@ libraries.androidx = androidx
 
 def google = [:]
 google.material = "com.google.android.material:material:$versions.google.material"
+google.gson = "com.google.code.gson:gson:$versions.google.gson"
 libraries.google = google
 
 // dagger: https://github.com/google/dagger
