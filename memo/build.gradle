@@ -36,6 +36,7 @@ dependencies {
     implementation application.language.kotlin
 
     api project(":core")
+    api project(":data")
 
     implementation libraries.androidx.base.core
     implementation libraries.androidx.base.appcompat
