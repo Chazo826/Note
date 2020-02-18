@@ -2,13 +2,25 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/memo_nav_graph">
+    android:id="@+id/memo_nav_graph"
+    app:startDestination="@id/memoListFragment">
 
     <fragment
         android:id="@+id/memoListFragment"
         android:name="com.chazo826.memo.list.ui.MemoListFragment"
         android:label="MemoList"
-        tools:layout="@layout/fragment_memo_list" />
+        tools:layout="@layout/fragment_memo_list">
 
+        <action
+            android:id="@+id/addMemo"
+            app:destination="@id/memoDetailFragment" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/memoDetailFragment"
+        android:name="com.chazo826.memo.detail.ui.MemoDetailFragment"
+        android:label="MemoDetail"
+        tools:layout="@layout/fragment_memo_detail" />
 
 </navigation>
