@@ -29,6 +29,14 @@ android {
         sourceCompatibility application.language.java
         targetCompatibility application.language.java
     }
+
+    kotlinOptions {
+        jvmTarget = application.language.java.toString()
+    }
+
+    dataBinding {
+        enabled = true
+    }
 }
 
 dependencies {
