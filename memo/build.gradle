@@ -46,6 +46,8 @@ dependencies {
     api project(":core")
     api project(":data")
 
+    implementation libraries.databinding.compiler
+
     implementation libraries.androidx.base.core
     implementation libraries.androidx.base.appcompat
     implementation libraries.androidx.base.constraintlayout
