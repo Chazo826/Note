@@ -3,7 +3,8 @@
     package="com.chazo826.memo">
 
     <application>
-        <activity android:name=".memo.MemoActivity"/>
+        <activity android:name=".memo.MemoActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
     </application>
 
 </manifest>
