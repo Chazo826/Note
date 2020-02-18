@@ -46,7 +46,7 @@ dependencies {
     api project(":core")
     api project(":data")
 
-    implementation libraries.databinding.compiler
+    kapt libraries.databinding.compiler
 
     implementation libraries.androidx.base.core
     implementation libraries.androidx.base.appcompat
