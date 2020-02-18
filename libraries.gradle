@@ -29,6 +29,10 @@ androidx.paging = paging
 
 libraries.androidx = androidx
 
+def databinding = [:]
+databinding.compiler = "com.android.databinding:compiler:$versions.databinding"
+libraries.databinding = databinding
+
 def google = [:]
 google.material = "com.google.android.material:material:$versions.google.material"
 google.gson = "com.google.code.gson:gson:$versions.google.gson"

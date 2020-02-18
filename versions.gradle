@@ -20,6 +20,8 @@ androidx.base = base
 
 versions.androidx = androidx
 
+versions.databinding = versions.build.gradle
+
 def google = [:]
 google.material = "1.1.0"
 google.gson = "2.8.6"
