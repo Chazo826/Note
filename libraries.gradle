@@ -21,6 +21,7 @@ androidx.lifecycle = lifecycle
 def room = [:]
 room.core = "androidx.room:room-runtime:$versions.androidx.room"
 room.compiler = "androidx.room:room-compiler:$versions.androidx.room"
+room.rxjava2 = "androidx.room:room-rxjava2:$versions.androidx.room"
 androidx.room = room
 
 def paging = [:]

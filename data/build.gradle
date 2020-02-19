@@ -41,6 +41,7 @@ dependencies {
 
     implementation libraries.androidx.room.core
     kapt libraries.androidx.room.compiler
+    implementation libraries.androidx.room.rxjava2
 
     implementation libraries.androidx.paging.core
 
