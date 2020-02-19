@@ -36,7 +36,15 @@ class MemoDetailFragment : DaggerFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setupMenu()
+        setupTitle()
+        setupContent()
+    }
 
+    private fun setupMenu() {
+        viewModel.menuInvalidate.observe(viewLifecycleOwner, Observer {
+            activity?.invalidateOptionsMenu()
+        })
     }
 
     private fun setupTitle() {
@@ -50,6 +58,7 @@ class MemoDetailFragment : DaggerFragment() {
             binding.etContent.setText(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 Html.fromHtml(it, Html.FROM_HTML_MODE_LEGACY)
             } else {
+                @Suppress("DEPRECATION")
                 Html.fromHtml(it)
             }, TextView.BufferType.SPANNABLE)
         })
@@ -60,9 +69,26 @@ class MemoDetailFragment : DaggerFragment() {
         super.onCreateOptionsMenu(menu, inflater)
     }
 
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        val editButton = menu.findItem(R.id.action_edit)
+        val saveButton = menu.findItem(R.id.action_save)
+        val imageAddButton = menu.findItem(R.id.action_image)
+
+        editButton?.isVisible = !viewModel.isEditable
+        imageAddButton?.isVisible = viewModel.isEditable
+
+        saveButton?.let {
+            it.isEnabled = viewModel.isDataExist.value == true
+            it.isVisible = viewModel.isEditable
+        }
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when(item.itemId) {
             R.id.action_edit -> {
+                true
+            }
+            R.id.action_delete -> {
                 true
             }
             R.id.action_save -> {

@@ -2,6 +2,7 @@ package com.chazo826.memo.detail.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.chazo826.core.dagger.extensions.NONE
@@ -28,9 +29,45 @@ class MemoDetailViewModel @Inject constructor(
     val contentHtml: LiveData<String>
         get() = _contentHtml
 
+    private val _isEditable = MutableLiveData<Boolean>(false)
+    val isEditable: Boolean
+        get() = _isEditable.value == true
+
+    val isDataExist: LiveData<Boolean> = MediatorLiveData<Boolean>().apply {
+        val merge = {
+            value = !title.value.isNullOrBlank() && !contentHtml.value.isNullOrEmpty()
+        }
+
+        addSource(title) { merge() }
+        addSource(contentHtml) { merge() }
+    }
+
+    val menuInvalidate: LiveData<Boolean> = MediatorLiveData<Boolean>().apply {
+        val onChange = {
+            value = value != true
+        }
+        addSource(_isEditable) { onChange() }
+        addSource(isDataExist) { onChange() }
+    }
+
+
     init {
-        if(memoUid.isNotNone()) {
+        if (memoUid.isNotNone()) {
             fetchMemo(memoUid)
+        }
+    }
+
+    fun setIsEditable(isFocus: Boolean) {
+        if(isFocus != isEditable) {
+            _isEditable.value = isFocus
+        }
+    }
+
+    fun writeMemo(title: String, content: String) {
+        if (memoUid == Long.NONE) {
+            memoRepository.insertMemo(title, content)
+        } else {
+            memoRepository.updateMemo(memoUid, title, content)
         }
     }
 
@@ -42,13 +79,5 @@ class MemoDetailViewModel @Inject constructor(
                 _title.value = it.title
                 _contentHtml.value = it.content
             }, { Log.e(MemoDetailViewModel::class.java.simpleName, it.toString()) })
-    }
-
-    fun writeMemo(title: String, content: String) {
-        if(memoUid == Long.NONE) {
-            memoRepository.insertMemo(title, content)
-        } else {
-            memoRepository.updateMemo(memoUid, title, content)
-        }
     }
 }
