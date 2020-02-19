@@ -60,6 +60,10 @@ dependencies {
 
     implementation libraries.google.material
 
+    implementation libraries.rxjava2.rxjava
+    implementation libraries.rxjava2.kotlin
+    implementation libraries.rxjava2.android
+
     implementation libraries.dagger2.core
     kapt libraries.dagger2.compiler
 
