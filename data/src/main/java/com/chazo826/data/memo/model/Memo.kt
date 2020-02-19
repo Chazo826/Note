@@ -6,9 +6,9 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class Memo(
-    @PrimaryKey(autoGenerate = true) val uid: Long,
+    @PrimaryKey(autoGenerate = true) val uid: Long = 0,
     val title: String?,
-    val date: Long?,
-    val content: String?,
-    val pictures: List<String>? = null
+    val updatedAt: Long?,
+    val content: String?
+//    val pictures: List<String>? = null
 )

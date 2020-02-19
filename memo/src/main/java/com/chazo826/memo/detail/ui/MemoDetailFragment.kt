@@ -39,10 +39,6 @@ class MemoDetailFragment : DaggerFragment() {
 
     }
 
-    private fun setupToolbar() {
-
-    }
-
     private fun setupTitle() {
         viewModel.title.observe(viewLifecycleOwner, Observer {
             binding.etTitle.setText(it)
@@ -76,6 +72,15 @@ class MemoDetailFragment : DaggerFragment() {
                 true
             }
             else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    companion object {
+        const val EXTRA_MEMO_UID = "extra_memo_uid"
+        fun newBundle(uid: Long): Bundle {
+            return Bundle().apply {
+                putLong(EXTRA_MEMO_UID, uid)
+            }
         }
     }
 }
