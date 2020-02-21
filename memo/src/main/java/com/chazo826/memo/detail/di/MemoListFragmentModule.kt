@@ -25,7 +25,7 @@ abstract class MemoDetailFragmentModule {
         @JvmStatic
         @Named("memo_uid")
         fun provideMemoUid(fragment: MemoDetailFragment): Long {
-            return fragment.arguments?.getLong(MemoDetailFragment.EXTRA_MEMO_UID) ?: Long.NONE
+            return fragment.arguments?.getLong(MemoDetailFragment.EXTRA_MEMO_UID, Long.NONE) ?: Long.NONE
         }
     }
 }

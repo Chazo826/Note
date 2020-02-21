@@ -35,8 +35,8 @@ android {
 
 dependencies {
     api project(":core")
-    api project(":memo")
     api project(":data")
+    api project(":memo")
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation application.language.kotlin
 
@@ -50,6 +50,10 @@ dependencies {
     implementation libraries.dagger2.android
     implementation libraries.dagger2.androidx
     kapt libraries.dagger2.processor
+
+    implementation libraries.androidx.room.core
+    kapt libraries.androidx.room.compiler
+    implementation libraries.androidx.room.rxjava2
 
     testImplementation libraries.test.androidx.junit
     androidTestImplementation libraries.test.androidx.junit

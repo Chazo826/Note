@@ -48,13 +48,13 @@ dagger2.compiler = "com.google.dagger:dagger-compiler:$versions.dagger2"
 dagger2.processor = "com.google.dagger:dagger-android-processor:$versions.dagger2"
 libraries.dagger2 = dagger2
 
-// rxjava2: https://github.com/ReactiveX/RxJava/tree/2.x
 // rxkotlin: https://github.com/ReactiveX/RxKotlin
 // rxandroid: https://github.com/ReactiveX/RxAndroid
+// rxbinding: https://github.com/JakeWharton/RxBinding
 def rxjava2 = [:]
-rxjava2.rxjava = "io.reactivex.rxjava2:rxjava:$versions.rxjava2.rxjava"
 rxjava2.kotlin = "io.reactivex.rxjava2:rxkotlin:$versions.rxjava2.kotlin"
 rxjava2.android = "io.reactivex.rxjava2:rxandroid:$versions.rxjava2.android"
+rxjava2.binding = "com.jakewharton.rxbinding3:rxbinding:$versions.rxjava2.binding"
 libraries.rxjava2 = rxjava2
 
 def test = [:]

@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.chazo826.core.dagger.extensions.NONE
 import com.chazo826.core.dagger.extensions.isNotNone
+import com.chazo826.core.dagger.viewmodel.StateBaseViewModel
 import com.chazo826.data.memo.MemoRepository
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -17,9 +18,8 @@ import javax.inject.Named
 
 class MemoDetailViewModel @Inject constructor(
     private val memoRepository: MemoRepository,
-    @Named("memo_uid") private val memoUid: Long
-) : ViewModel() {
-    private val disposable by lazy { CompositeDisposable() }
+    @Named("memo_uid") val memoUid: Long
+) : StateBaseViewModel() {
 
     private val _title = MutableLiveData<String>()
     val title: LiveData<String>
@@ -50,34 +50,42 @@ class MemoDetailViewModel @Inject constructor(
         addSource(isDataExist) { onChange() }
     }
 
-
     init {
         if (memoUid.isNotNone()) {
             fetchMemo(memoUid)
         }
     }
 
-    fun setIsEditable(isFocus: Boolean) {
-        if(isFocus != isEditable) {
-            _isEditable.value = isFocus
+    fun setIsEditable(isEditable: Boolean) {
+        if(isEditable != this.isEditable) {
+            _isEditable.value = isEditable
         }
     }
 
     fun writeMemo(title: String, content: String) {
-        if (memoUid == Long.NONE) {
-            memoRepository.insertMemo(title, content)
-        } else {
-            memoRepository.updateMemo(memoUid, title, content)
-        }
+        disposable += when(memoUid) {
+            Long.NONE -> memoRepository.insertMemo(title, content)
+            else -> memoRepository.updateMemo(memoUid, title, content)
+        }.stateTransformer()
+            .subscribe({
+
+            }, { Log.e(this::class.java.simpleName, it.toString()) })
+    }
+
+    fun deleteMemo() {
+        disposable += memoRepository.deleteMemo(memoUid)
+            .stateTransformer()
+            .subscribe({
+
+            }, { Log.e(this::class.java.simpleName, it.toString()) })
     }
 
     private fun fetchMemo(uid: Long) {
         disposable += memoRepository.fetchMemo(uid)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+            .stateTransformer()
             .subscribe({
                 _title.value = it.title
                 _contentHtml.value = it.content
-            }, { Log.e(MemoDetailViewModel::class.java.simpleName, it.toString()) })
+            }, { Log.e(this::class.java.simpleName, it.toString()) })
     }
 }

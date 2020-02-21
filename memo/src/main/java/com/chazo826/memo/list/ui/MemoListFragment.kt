@@ -2,6 +2,7 @@ package com.chazo826.memo.list.ui
 
 import android.os.Bundle
 import android.view.*
+import androidx.databinding.DataBindingUtil
 import androidx.navigation.fragment.findNavController
 import com.chazo826.core.dagger.android.DaggerFragment
 import com.chazo826.memo.R
@@ -17,7 +18,7 @@ class MemoListFragment : DaggerFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentMemoListBinding.inflate(inflater, container, false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_memo_list, container, false)
         setHasOptionsMenu(true)
         return binding.root
     }

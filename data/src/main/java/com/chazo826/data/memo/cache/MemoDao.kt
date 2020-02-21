@@ -4,6 +4,8 @@ import androidx.paging.DataSource
 import androidx.paging.PositionalDataSource
 import androidx.room.*
 import com.chazo826.data.memo.model.Memo
+import io.reactivex.Completable
+import io.reactivex.Flowable
 import io.reactivex.Single
 
 @Dao
@@ -16,11 +18,11 @@ interface MemoDao {
     fun fetchMemo(uid: Long): Single<Memo>
 
     @Insert
-    fun insert(memo: Memo)
+    fun insert(memo: Memo): Completable
 
     @Update
-    fun update(memo: Memo)
+    fun update(memo: Memo): Completable
 
     @Query("DELETE FROM memo WHERE uid == :uid")
-    fun delete(uid: Long)
+    fun delete(uid: Long): Completable
 }

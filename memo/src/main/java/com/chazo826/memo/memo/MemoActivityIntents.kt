@@ -1,9 +1,9 @@
 package com.chazo826.memo.memo
 
-import android.content.Context
 import android.content.Intent
+import androidx.fragment.app.FragmentActivity
 
 object MemoActivityIntents {
 
-    fun Context.newIntentForMemoActivity(): Intent = Intent(this, MemoActivity::class.java)
+    fun FragmentActivity.newIntentForMemoActivity(): Intent = Intent(this, MemoActivity::class.java)
 }

@@ -1,18 +1,29 @@
 package com.chazo826.memo.detail.ui
 
+import android.app.AlertDialog
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.os.Build
 import android.os.Bundle
 import android.text.Html
 import android.view.*
 import android.widget.TextView
+import android.widget.Toast
+import androidx.core.view.isVisible
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.chazo826.core.dagger.android.DaggerFragment
+import com.chazo826.core.dagger.constants.RequestCodeConsts
+import com.chazo826.core.dagger.extensions.*
 import com.chazo826.core.dagger.viewmodel_factory.CommonViewModelFactory
 import com.chazo826.memo.R
 import com.chazo826.memo.databinding.FragmentMemoDetailBinding
 import com.chazo826.memo.detail.viewmodel.MemoDetailViewModel
-import kotlinx.android.synthetic.main.activity_memo.*
+import com.jakewharton.rxbinding3.view.focusChanges
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.plusAssign
 import javax.inject.Inject
 
 class MemoDetailFragment : DaggerFragment() {
@@ -24,12 +35,14 @@ class MemoDetailFragment : DaggerFragment() {
 
     private val viewModel: MemoDetailViewModel by viewModels { viewModelFactory }
 
+    private val disposable by lazy { CompositeDisposable() }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentMemoDetailBinding.inflate(inflater, container, false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_memo_detail, container, false)
         setHasOptionsMenu(true)
         return binding.root
     }
@@ -37,8 +50,10 @@ class MemoDetailFragment : DaggerFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupMenu()
+        setupLoading()
         setupTitle()
         setupContent()
+        setupEditable()
     }
 
     private fun setupMenu() {
@@ -55,13 +70,29 @@ class MemoDetailFragment : DaggerFragment() {
 
     private fun setupContent() {
         viewModel.contentHtml.observe(viewLifecycleOwner, Observer {
-            binding.etContent.setText(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                Html.fromHtml(it, Html.FROM_HTML_MODE_LEGACY)
-            } else {
-                @Suppress("DEPRECATION")
-                Html.fromHtml(it)
-            }, TextView.BufferType.SPANNABLE)
+            binding.etContent.setText(
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    Html.fromHtml(it, Html.FROM_HTML_MODE_LEGACY)
+                } else {
+                    @Suppress("DEPRECATION")
+                    Html.fromHtml(it)
+                }, TextView.BufferType.SPANNABLE
+            )
         })
+    }
+
+    private fun setupLoading() {
+        viewModel.loadingState.observe(viewLifecycleOwner, Observer {
+            binding.pgLoading.isVisible = it
+        })
+    }
+
+    private fun setupEditable() {
+        disposable += binding.etTitle.focusChanges().mergeWith(binding.etContent.focusChanges())
+            .subscribe {
+                if (it)
+                    viewModel.setIsEditable(true)
+            }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -73,9 +104,11 @@ class MemoDetailFragment : DaggerFragment() {
         val editButton = menu.findItem(R.id.action_edit)
         val saveButton = menu.findItem(R.id.action_save)
         val imageAddButton = menu.findItem(R.id.action_image)
+        val deleteButton = menu.findItem(R.id.action_delete)
 
         editButton?.isVisible = !viewModel.isEditable
         imageAddButton?.isVisible = viewModel.isEditable
+        deleteButton?.isVisible = viewModel.memoUid.isNotNone()
 
         saveButton?.let {
             it.isEnabled = viewModel.isDataExist.value == true
@@ -84,22 +117,84 @@ class MemoDetailFragment : DaggerFragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when(item.itemId) {
+        return when (item.itemId) {
             R.id.action_edit -> {
+                binding.etTitle.requestFocus()
+                viewModel.setIsEditable(true)
                 true
             }
             R.id.action_delete -> {
+                viewModel.deleteMemo()
                 true
             }
             R.id.action_save -> {
+                binding.etContent.clearFocus()
+                binding.etTitle.clearFocus()
+                viewModel.setIsEditable(false)
                 true
             }
             R.id.action_image -> {
+                showSelectDialogForImage()
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
     }
+
+    private fun showSelectDialogForImage() {
+        AlertDialog.Builder(context)
+            .setItems(
+                arrayOf(
+                    getString(R.string.image_select_dialog_album),
+                    getString(R.string.image_select_dialog_camera),
+                    getString(R.string.image_select_dialog_url)
+                )
+            ) { _, which ->
+                when (which) {
+                    0 -> {
+                        //TODO: 앨범
+
+                    }
+                    1 -> {
+                        //TODO: 카메라
+                        moveCameraForImage()
+                    }
+                    2 -> {
+                        //TODO: URL
+                    }
+                }
+            }.show()
+    }
+
+    private fun moveAlbumForImage() {
+
+    }
+
+    private fun moveCameraForImage() {
+        if (activity?.packageManager?.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY) == false) {
+            showToast("카메라 기능을 지원하지 않는 디바이스입니다.", Toast.LENGTH_SHORT)
+            return
+        }
+
+        startActivityForResult(activity?.newIntentForCameraImage(), RequestCodeConsts.IMAGE_CAMERA)
+    }
+
+    private fun moveURLInput() {
+
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            RequestCodeConsts.IMAGE_CAMERA -> if (resultCode.isOK()) {
+                (data?.extras?.get("data") as? Bitmap)?.let {
+
+                }
+            }
+        }
+    }
+
+
 
     companion object {
         const val EXTRA_MEMO_UID = "extra_memo_uid"

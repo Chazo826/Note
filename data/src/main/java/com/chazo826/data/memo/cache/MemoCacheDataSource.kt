@@ -3,6 +3,7 @@ package com.chazo826.data.memo.cache
 import androidx.paging.PositionalDataSource
 import com.chazo826.data.memo.MemoRepository
 import com.chazo826.data.memo.model.Memo
+import io.reactivex.Completable
 import io.reactivex.Single
 import javax.inject.Inject
 
@@ -17,17 +18,17 @@ class MemoCacheDataSource @Inject constructor(
         return memoDao.fetchMemo(uid)
     }
 
-    override fun insertMemo(title: String, content: String) {
+    override fun insertMemo(title: String, content: String): Completable {
         val updatedAt = System.currentTimeMillis()
         return memoDao.insert(Memo(title = title, content = content, updatedAt = updatedAt))
     }
 
-    override fun updateMemo(uid: Long, title: String, content: String) {
+    override fun updateMemo(uid: Long, title: String, content: String): Completable {
         val updatedAt = System.currentTimeMillis()
         return memoDao.update(Memo(uid, title, updatedAt, content))
     }
 
-    override fun deleteMemo(uid: Long) {
+    override fun deleteMemo(uid: Long): Completable {
         return memoDao.delete(uid)
     }
 }
