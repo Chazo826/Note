@@ -1,5 +1,6 @@
 package com.chazo826.memo.detail.viewmodel
 
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
@@ -32,6 +33,8 @@ class MemoDetailViewModel @Inject constructor(
     private val _isEditable = MutableLiveData<Boolean>(false)
     val isEditable: Boolean
         get() = _isEditable.value == true
+
+    var photoUri: Uri? = null
 
     val isDataExist: LiveData<Boolean> = MediatorLiveData<Boolean>().apply {
         val merge = {

@@ -15,8 +15,8 @@ def base = [:]
 base.core = "1.2.0"
 base.constraintlayout = "1.1.3"
 base.appcompat = "1.1.0"
+base.swiperefreshlayout = "1.0.0"
 androidx.base = base
-
 
 versions.androidx = androidx
 
@@ -34,6 +34,8 @@ rxjava2.kotlin = "2.4.0"
 rxjava2.android = "2.1.1"
 rxjava2.binding = "3.1.0"
 versions.rxjava2 = rxjava2
+
+versions.glide = "4.11.0"
 
 def test = [:]
 test.junit = "4.12"

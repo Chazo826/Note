@@ -37,6 +37,7 @@ dependencies {
 
     implementation libraries.androidx.base.core
     implementation libraries.androidx.base.appcompat
+    implementation libraries.androidx.base.swiperefreshlayout
 
     implementation libraries.androidx.lifecycle.common
     implementation libraries.androidx.lifecycle.extensions
@@ -50,6 +51,10 @@ dependencies {
 
     implementation libraries.rxjava2.kotlin
     implementation libraries.rxjava2.android
+
+    implementation libraries.glide.core
+    kapt libraries.glide.compiler
+
 
     testImplementation libraries.test.androidx.junit
     androidTestImplementation libraries.test.androidx.junit

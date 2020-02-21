@@ -6,6 +6,7 @@ def base = [:]
 base.core = "androidx.core:core-ktx:$versions.androidx.base.core"
 base.appcompat = "androidx.appcompat:appcompat:$versions.androidx.base.appcompat"
 base.constraintlayout = "androidx.constraintlayout:constraintlayout:$versions.androidx.base.constraintlayout"
+base.swiperefreshlayout = "androidx.swiperefreshlayout:swiperefreshlayout:$versions.androidx.base.swiperefreshlayout"
 androidx.base = base
 
 def navigation = [:]
@@ -26,6 +27,7 @@ androidx.room = room
 
 def paging = [:]
 paging.core = "androidx.paging:paging-runtime:$versions.androidx.paging"
+
 androidx.paging = paging
 
 libraries.androidx = androidx
@@ -56,6 +58,12 @@ rxjava2.kotlin = "io.reactivex.rxjava2:rxkotlin:$versions.rxjava2.kotlin"
 rxjava2.android = "io.reactivex.rxjava2:rxandroid:$versions.rxjava2.android"
 rxjava2.binding = "com.jakewharton.rxbinding3:rxbinding:$versions.rxjava2.binding"
 libraries.rxjava2 = rxjava2
+
+//glide: https://github.com/bumptech/glide
+def glide = [:]
+glide.core = "com.github.bumptech.glide:glide:$versions.glide"
+glide.compiler = "com.github.bumptech.glide:compiler:$versions.glide"
+libraries.glide = glide
 
 def test = [:]
 test.junit = "junit:junit:$versions.test.junit"
