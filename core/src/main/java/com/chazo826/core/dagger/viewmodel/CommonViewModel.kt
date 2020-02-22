@@ -3,7 +3,8 @@ package com.chazo826.core.dagger.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import io.reactivex.*
+import io.reactivex.CompletableTransformer
+import io.reactivex.SingleTransformer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -37,7 +38,7 @@ abstract class StateBaseViewModel : ViewModel() {
         }
     }
 
-    fun CompletableStateTransformer(): CompletableTransformer {
+    fun completableStateTransformer(): CompletableTransformer {
         return CompletableTransformer {
             val single = it.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

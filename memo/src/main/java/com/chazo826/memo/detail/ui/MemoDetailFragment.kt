@@ -4,29 +4,21 @@ import android.Manifest
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.drawable.Drawable
+import android.graphics.Rect
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
-import android.text.Html
-import android.text.Spanned
-import android.text.style.ImageSpan
 import android.view.*
-import android.widget.TextView
+import android.widget.EditText
 import android.widget.Toast
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.swiperefreshlayout.widget.CircularProgressDrawable
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.transition.Transition
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.RecyclerView
 import com.chazo826.core.dagger.android.DaggerFragment
 import com.chazo826.core.dagger.constants.RequestCodeConsts
 import com.chazo826.core.dagger.constants.RequestCodeConsts.PERMISSION_CAMERA
@@ -37,8 +29,8 @@ import com.chazo826.core.dagger.utils.createImageFile
 import com.chazo826.core.dagger.viewmodel_factory.CommonViewModelFactory
 import com.chazo826.memo.R
 import com.chazo826.memo.databinding.FragmentMemoDetailBinding
+import com.chazo826.memo.detail.adapter.AttachImageAdapter
 import com.chazo826.memo.detail.viewmodel.MemoDetailViewModel
-import com.chazo826.memo.list.ImageEditableTextWatcher
 import com.jakewharton.rxbinding3.view.focusChanges
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
@@ -57,6 +49,8 @@ class MemoDetailFragment : DaggerFragment() {
 
     private val disposable by lazy { CompositeDisposable() }
 
+    private var imagesAdapter: AttachImageAdapter? = null
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -69,48 +63,49 @@ class MemoDetailFragment : DaggerFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.viewModel = viewModel
+        binding.lifecycleOwner = viewLifecycleOwner
         setupMenu()
         setupLoading()
-        setupTitle()
-        setupContent()
         setupEditable()
+        setupImages()
     }
 
     private fun setupMenu() {
         viewModel.menuInvalidate.observe(viewLifecycleOwner, Observer {
             activity?.invalidateOptionsMenu()
+            imagesAdapter?.setIsEditable(viewModel.isEditable)
         })
     }
 
-    private fun setupTitle() {
-        viewModel.title.observe(viewLifecycleOwner, Observer {
-            binding.etTitle.setText(it)
+    private fun setupImages() {
+        imagesAdapter =  AttachImageAdapter(disposable) {
+            viewModel.removeImageUri(it)
+        }
+
+        binding.ryPictures.apply {
+            adapter = imagesAdapter
+            addItemDecoration(object : RecyclerView.ItemDecoration() {
+                override fun getItemOffsets(
+                    outRect: Rect,
+                    view: View,
+                    parent: RecyclerView,
+                    state: RecyclerView.State
+                ) {
+                    super.getItemOffsets(outRect, view, parent, state)
+                    val position = parent.getChildAdapterPosition(view)
+                    val itemCount = state.itemCount
+
+                    if(position < itemCount) {
+                        outRect.right = resources.getDimension(R.dimen.memo_images_right_margin).toInt()
+                    }
+                }
+            })
+        }
+
+        viewModel.imageUris.observe(viewLifecycleOwner, Observer {
+            imagesAdapter?.submitList(it)
         })
-    }
-
-    private fun setupContent() {
-        viewModel.contentHtml.observe(viewLifecycleOwner, Observer {
-            binding.etContent.setText(
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    Html.fromHtml(it, Html.FROM_HTML_MODE_LEGACY)
-                } else {
-                    @Suppress("DEPRECATION")
-                    Html.fromHtml(it)
-                }, TextView.BufferType.SPANNABLE
-            )
-        })
-
-        binding.etContent.addTextChangedListener(ImageEditableTextWatcher(binding.etContent))
-
-//        disposable += binding.etContent.textChanges()
-//            .subscribe {
-//                Log.d(this::class.java.simpleName, "EditText.ToString(): ${binding.etContent.text} ")
-//
-//                binding.etContent.text.getSpans<ImageSpan>(0, binding.etContent.length()).forEach {
-//                    Log.d(this::class.java.simpleName, "ImageSpan.source : ${it.source} ")
-//                    Log.d(this::class.java.simpleName, "ImageSpan.spanStart : ${binding.etContent.editableText.getSpanStart(it)} ")
-//                }
-//            }
     }
 
 
@@ -157,13 +152,15 @@ class MemoDetailFragment : DaggerFragment() {
                 true
             }
             R.id.action_delete -> {
-                viewModel.deleteMemo()
+                viewModel.deleteMemo {
+                    findNavController().navigateUp()
+                }
                 true
             }
             R.id.action_save -> {
                 binding.etContent.clearFocus()
                 binding.etTitle.clearFocus()
-                viewModel.setIsEditable(false)
+                viewModel.writeMemo()
                 true
             }
             R.id.action_image -> {
@@ -184,17 +181,9 @@ class MemoDetailFragment : DaggerFragment() {
                 )
             ) { _, which ->
                 when (which) {
-                    0 -> {
-                        //TODO: 앨범
-                        moveAlbumForImage()
-                    }
-                    1 -> {
-                        //TODO: 카메라
-                        moveCameraForImage()
-                    }
-                    2 -> {
-                        //TODO: URL
-                    }
+                    0 -> moveAlbumForImage()
+                    1 -> moveCameraForImage()
+                    2 -> moveURLInput()
                 }
             }.show()
     }
@@ -254,6 +243,16 @@ class MemoDetailFragment : DaggerFragment() {
     }
 
     private fun moveURLInput() {
+        AlertDialog.Builder(context)
+            .also {
+                val editText = EditText(context)
+                editText.hint = getString(R.string.memo_image_uri_input_hint)
+
+                it.setView(editText)
+                    .setPositiveButton(R.string.complete) { _, _ ->
+                        addImageToContent(Uri.parse(editText.text.toString()))
+                    }
+            }.show()
 
     }
 
@@ -261,73 +260,17 @@ class MemoDetailFragment : DaggerFragment() {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             RequestCodeConsts.IMAGE_ALBUM -> if (resultCode.isOK()) {
-                data?.data?.let(::addImageSpanToContent)
+                data?.data?.let(::addImageToContent)
             }
 
             RequestCodeConsts.IMAGE_CAMERA -> if (resultCode.isOK()) {
-                viewModel.photoUri?.let(::addImageSpanToContent)
+                viewModel.photoUri?.let(::addImageToContent)
             }
         }
     }
 
-    private fun addImageSpanToContent(uri: Uri) {
-        context?.let { context ->
-            setImageSpanTarget(uri)?.let {
-                Glide.with(context)
-                    .asDrawable()
-                    .load(uri)
-                    .override(10, 10)
-                    .placeholder(createCircleProgress())
-                    .error(R.drawable.ic_error)
-                    .into(it)
-            }
-        }
-    }
-
-    private fun setImageSpanTarget(uri: Uri): CustomTarget<Drawable>? {
-        val editText = binding.etContent
-
-        val message = editText.editableText
-        val selectionStart = editText.selectionStart
-        val text = "IMAGE "
-        message.replace(selectionStart, editText.selectionEnd, text)
-
-        return object : CustomTarget<Drawable>() {
-            override fun onLoadCleared(placeholder: Drawable?) {
-                context?.let { context ->
-                    val imageSpan = ImageSpan(context, uri)
-                    message.setSpan(
-                        imageSpan,
-                        selectionStart,
-                        selectionStart + text.length,
-                        Spanned.SPAN_INCLUSIVE_INCLUSIVE
-                    )
-                }
-            }
-
-            override fun onResourceReady(
-                resource: Drawable,
-                transition: Transition<in Drawable>?
-            ) {
-                context?.let { context ->
-                    val imageSpan = ImageSpan(context, uri)
-                    message.setSpan(
-                        imageSpan,
-                        selectionStart,
-                        selectionStart + text.length,
-                        Spanned.SPAN_INCLUSIVE_INCLUSIVE
-                    )
-                }
-            }
-        }
-    }
-
-    private fun createCircleProgress(): Drawable {
-        val circularProgressDrawable = CircularProgressDrawable(requireContext())
-        circularProgressDrawable.strokeWidth = 5f
-        circularProgressDrawable.centerRadius = 30f
-        circularProgressDrawable.start()
-        return circularProgressDrawable
+    private fun addImageToContent(uri: Uri) {
+        viewModel.addImageUri(uri)
     }
 
     override fun onRequestPermissionsResult(
@@ -338,7 +281,7 @@ class MemoDetailFragment : DaggerFragment() {
         when (requestCode) {
             PERMISSION_CAMERA -> {
                 if (grantResults.firstOrNull() == PackageManager.PERMISSION_DENIED) {
-                    showToast("권한이 없으면 이미지 첨부기능을 사용하실 수 없습니다.")
+                    showToast(R.string.camera_permission_denied_guide)
                 }
             }
             else -> super.onRequestPermissionsResult(requestCode, permissions, grantResults)

@@ -1,5 +1,6 @@
 package com.chazo826.data.memo
 
+import android.net.Uri
 import androidx.paging.PositionalDataSource
 import com.chazo826.data.memo.model.Memo
 import io.reactivex.Completable
@@ -11,9 +12,9 @@ interface MemoRepository {
 
     fun fetchMemo(uid: Long): Single<Memo>
 
-    fun insertMemo(title: String, content: String): Completable
+    fun insertMemo(title: String, content: String, uri: List<Uri>? = null): Single<Long>
 
-    fun updateMemo(uid: Long, title: String, content: String): Completable
+    fun updateMemo(uid: Long, title: String, content: String, uri: List<Uri>? = null): Completable
 
     fun deleteMemo(uid: Long): Completable
 }

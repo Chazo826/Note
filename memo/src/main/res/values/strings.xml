@@ -6,6 +6,7 @@
     <string name="delete">삭제</string>
     <string name="image">이미지</string>
     <string name="add">추가</string>
+    <string name="complete">완료</string>
 
     <string name="image_select_dialog_album">앨범</string>
     <string name="image_select_dialog_camera">카메라</string>
@@ -13,4 +14,9 @@
 
     <string name="title">제목</string>
     <string name="memo_detail_content_hint">내용을 입력해주세요.</string>
+
+    <string name="camera_permission_rationale">카메라와 앨범에서 이미지를 가져오기 위해 저장소 접근 권한이 필요합니다.</string>
+    <string name="camera_permission_denied_guide">권한이 없으면 카메라 및 앨범에서 이미지 가져오기를 사용하실 수 없습니다.</string>
+
+    <string name="memo_image_uri_input_hint">이미지 URL을 입력해주세요.</string>
 </resources>

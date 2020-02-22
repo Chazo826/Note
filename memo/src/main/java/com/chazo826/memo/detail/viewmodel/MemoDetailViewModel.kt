@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import com.chazo826.core.dagger.extensions.NONE
+import com.chazo826.core.dagger.extensions.TAG
 import com.chazo826.core.dagger.extensions.isNotNone
 import com.chazo826.core.dagger.viewmodel.StateBaseViewModel
 import com.chazo826.data.memo.MemoRepository
@@ -15,30 +16,31 @@ import javax.inject.Named
 
 class MemoDetailViewModel @Inject constructor(
     private val memoRepository: MemoRepository,
-    @Named("memo_uid") val memoUid: Long
+    @Named("memo_uid") var memoUid: Long
 ) : StateBaseViewModel() {
 
-    private val _title = MutableLiveData<String>()
-    val title: LiveData<String>
-        get() = _title
+    val title = MutableLiveData<String>()
 
-    private val _contentHtml = MutableLiveData<String>()
-    val contentHtml: LiveData<String>
-        get() = _contentHtml
+    val content = MutableLiveData<String>()
 
     private val _isEditable = MutableLiveData<Boolean>(false)
     val isEditable: Boolean
         get() = _isEditable.value == true
 
+    private val _imageUris = MutableLiveData<List<Uri>>()
+    val imageUris: LiveData<List<Uri>>
+        get() = _imageUris
+
     var photoUri: Uri? = null
 
-    val isDataExist: LiveData<Boolean> = MediatorLiveData<Boolean>().apply {
+    val isDataExist: MediatorLiveData<Boolean> = MediatorLiveData<Boolean>().apply {
         val merge = {
-            value = !title.value.isNullOrBlank() && !contentHtml.value.isNullOrEmpty()
+            value = !title.value.isNullOrBlank() && !content.value.isNullOrEmpty()
+            Log.d(TAG, "hahahah $value")
         }
 
         addSource(title) { merge() }
-        addSource(contentHtml) { merge() }
+        addSource(content) { merge() }
     }
 
     val menuInvalidate: LiveData<Boolean> = MediatorLiveData<Boolean>().apply {
@@ -56,26 +58,58 @@ class MemoDetailViewModel @Inject constructor(
     }
 
     fun setIsEditable(isEditable: Boolean) {
-        if(isEditable != this.isEditable) {
+        if (isEditable != this.isEditable) {
             _isEditable.value = isEditable
         }
     }
 
-    fun writeMemo(title: String, content: String) {
-        disposable += when(memoUid) {
-            Long.NONE -> memoRepository.insertMemo(title, content)
-            else -> memoRepository.updateMemo(memoUid, title, content)
-        }.compose(CompletableStateTransformer())
-            .subscribe({
-
-            }, { Log.e(this::class.java.simpleName, it.toString()) })
+    fun addImageUri(uri: Uri) {
+        val uris = mutableListOf<Uri>().apply {
+            imageUris.value?.let { addAll(it) }
+            add(uri)
+        }
+        _imageUris.value = uris
     }
 
-    fun deleteMemo() {
-        disposable += memoRepository.deleteMemo(memoUid)
-            .compose(CompletableStateTransformer())
-            .subscribe({
+    fun removeImageUri(index: Int) {
+        val uris = mutableListOf<Uri>().apply {
+            imageUris.value?.let { addAll(it.filterIndexed { i, _ -> i != index }) }
+        }
+        _imageUris.value = uris
+    }
 
+    fun writeMemo() {
+        if(title.value != null && content.value != null) {
+            writeMemo(title.value!!, content.value!!, imageUris.value)
+        }
+    }
+
+    private fun writeMemo(title: String, content: String, uris: List<Uri>?) {
+        val writeComplete = {
+            setIsEditable(false)
+        }
+
+        disposable += when (memoUid) {
+            Long.NONE -> memoRepository.insertMemo(title, content, uris)
+                .compose(singleStateTransformer())
+                .subscribe({
+                    memoUid = it
+                    writeComplete()
+                }, { Log.e(this::class.java.simpleName, it.toString()) })
+
+            else -> memoRepository.updateMemo(memoUid, title, content, uris)
+                .compose(completableStateTransformer())
+                .subscribe({
+                    writeComplete()
+                }, { Log.e(this::class.java.simpleName, it.toString()) })
+        }
+    }
+
+    fun deleteMemo(onComplete: () -> Unit) {
+        disposable += memoRepository.deleteMemo(memoUid)
+            .compose(completableStateTransformer())
+            .subscribe({
+                onComplete()
             }, { Log.e(this::class.java.simpleName, it.toString()) })
     }
 
@@ -83,8 +117,9 @@ class MemoDetailViewModel @Inject constructor(
         disposable += memoRepository.fetchMemo(uid)
             .compose(singleStateTransformer())
             .subscribe({
-                _title.value = it.title
-                _contentHtml.value = it.content
+                title.value = it.title
+                content.value = it.content
+                _imageUris.value = it.pictures?.map { Uri.parse(it) }
             }, { Log.e(this::class.java.simpleName, it.toString()) })
     }
 }

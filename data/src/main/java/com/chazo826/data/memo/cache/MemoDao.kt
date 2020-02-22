@@ -1,11 +1,12 @@
 package com.chazo826.data.memo.cache
 
-import androidx.paging.DataSource
 import androidx.paging.PositionalDataSource
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
+import androidx.room.Update
 import com.chazo826.data.memo.model.Memo
 import io.reactivex.Completable
-import io.reactivex.Flowable
 import io.reactivex.Single
 
 @Dao
@@ -18,7 +19,7 @@ interface MemoDao {
     fun fetchMemo(uid: Long): Single<Memo>
 
     @Insert
-    fun insert(memo: Memo): Completable
+    fun insert(memo: Memo): Single<Long>
 
     @Update
     fun update(memo: Memo): Completable
