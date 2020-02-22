@@ -11,3 +11,14 @@ fun Fragment.isPermissionGranted(permission: String): Boolean =
 fun Fragment.showPermissionRationale(@StringRes stringId: Int) {
     showToast(stringId)
 }
+
+fun Fragment.checkPermissionBeforeAction(permission: String, requestCode: Int, @StringRes rationaleStringId: Int, action: () -> Unit) {
+    if (!isPermissionGranted(permission)) {
+        if (shouldShowRequestPermissionRationale(permission)) {
+            showPermissionRationale(rationaleStringId)
+        }
+        requestPermissions(arrayOf(permission), requestCode)
+    } else {
+        action()
+    }
+}

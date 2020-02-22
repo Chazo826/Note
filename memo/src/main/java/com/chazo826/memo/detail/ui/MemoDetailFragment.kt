@@ -23,7 +23,10 @@ import com.chazo826.core.constants.RequestCodeConsts
 import com.chazo826.core.constants.RequestCodeConsts.PERMISSION_CAMERA
 import com.chazo826.core.dagger.android.DaggerFragment
 import com.chazo826.core.dagger.viewmodel_factory.CommonViewModelFactory
-import com.chazo826.core.extensions.*
+import com.chazo826.core.extensions.checkPermissionBeforeAction
+import com.chazo826.core.extensions.isNotNone
+import com.chazo826.core.extensions.isOK
+import com.chazo826.core.extensions.showToast
 import com.chazo826.core.newIntentForCameraImage
 import com.chazo826.core.newIntentForImageAlbum
 import com.chazo826.core.utils.createImageFile
@@ -191,7 +194,7 @@ class MemoDetailFragment : DaggerFragment() {
     private fun moveAlbumForImage() {
         val writeExternalStoragePermission = Manifest.permission.WRITE_EXTERNAL_STORAGE
 
-        checkPermissionBeforeAction(writeExternalStoragePermission, PERMISSION_CAMERA) {
+        checkPermissionBeforeAction(writeExternalStoragePermission, PERMISSION_CAMERA, R.string.camera_permission_rationale) {
             activity?.newIntentForImageAlbum().also {
                 startActivityForResult(it, RequestCodeConsts.IMAGE_ALBUM)
             }
@@ -206,7 +209,7 @@ class MemoDetailFragment : DaggerFragment() {
 
         val writeExternalStoragePermission = Manifest.permission.WRITE_EXTERNAL_STORAGE
 
-        checkPermissionBeforeAction(writeExternalStoragePermission, PERMISSION_CAMERA) {
+        checkPermissionBeforeAction(writeExternalStoragePermission, PERMISSION_CAMERA, R.string.camera_permission_rationale) {
             activity?.newIntentForCameraImage()?.also {
                 val photoFile: File? = try {
                     activity?.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
@@ -228,17 +231,6 @@ class MemoDetailFragment : DaggerFragment() {
             }?.also {
                 startActivityForResult(it, RequestCodeConsts.IMAGE_CAMERA)
             }
-        }
-    }
-
-    private fun checkPermissionBeforeAction(permission: String, requestCode: Int, action: () -> Unit) {
-        if (!isPermissionGranted(permission)) {
-            if (shouldShowRequestPermissionRationale(permission)) {
-                showPermissionRationale(R.string.app_name)
-            }
-            requestPermissions(arrayOf(permission), requestCode)
-        } else {
-            action()
         }
     }
 
