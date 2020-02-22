@@ -5,15 +5,11 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.chazo826.core.dagger.extensions.NONE
 import com.chazo826.core.dagger.extensions.isNotNone
 import com.chazo826.core.dagger.viewmodel.StateBaseViewModel
 import com.chazo826.data.memo.MemoRepository
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
-import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -69,7 +65,7 @@ class MemoDetailViewModel @Inject constructor(
         disposable += when(memoUid) {
             Long.NONE -> memoRepository.insertMemo(title, content)
             else -> memoRepository.updateMemo(memoUid, title, content)
-        }.stateTransformer()
+        }.compose(CompletableStateTransformer())
             .subscribe({
 
             }, { Log.e(this::class.java.simpleName, it.toString()) })
@@ -77,7 +73,7 @@ class MemoDetailViewModel @Inject constructor(
 
     fun deleteMemo() {
         disposable += memoRepository.deleteMemo(memoUid)
-            .stateTransformer()
+            .compose(CompletableStateTransformer())
             .subscribe({
 
             }, { Log.e(this::class.java.simpleName, it.toString()) })
@@ -85,7 +81,7 @@ class MemoDetailViewModel @Inject constructor(
 
     private fun fetchMemo(uid: Long) {
         disposable += memoRepository.fetchMemo(uid)
-            .stateTransformer()
+            .compose(singleStateTransformer())
             .subscribe({
                 _title.value = it.title
                 _contentHtml.value = it.content

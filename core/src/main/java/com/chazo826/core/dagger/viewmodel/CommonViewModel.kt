@@ -16,18 +16,18 @@ abstract class StateBaseViewModel : ViewModel() {
     val loadingState: LiveData<Boolean>
         get() = _loadingState
 
-    fun <T> Single<T>.stateTransformer(): Single<T> {
-        return compose {
+    fun <T> singleStateTransformer(): SingleTransformer<T, T> {
+        return SingleTransformer {
             val single = it.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .loadingTransformer()
+                .compose(singleLoadingTransformer())
 
             single
         }
     }
 
-    private fun <T> Single<T>.loadingTransformer(): Single<T> {
-        return compose {
+    private fun <T> singleLoadingTransformer(): SingleTransformer<T, T> {
+        return SingleTransformer {
             val single = it.doOnSubscribe {
                 _loadingState.postValue(true)
             }.doFinally {
@@ -37,18 +37,18 @@ abstract class StateBaseViewModel : ViewModel() {
         }
     }
 
-    fun Completable.stateTransformer(): Completable {
-        return compose {
+    fun CompletableStateTransformer(): CompletableTransformer {
+        return CompletableTransformer {
             val single = it.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .loadingTransformer()
+                .compose(completableLoadingTransformer())
 
             single
         }
     }
 
-    private fun Completable.loadingTransformer(): Completable {
-        return compose {
+    private fun completableLoadingTransformer(): CompletableTransformer {
+        return CompletableTransformer {
             val single = it.doOnSubscribe {
                 _loadingState.postValue(true)
             }.doFinally {

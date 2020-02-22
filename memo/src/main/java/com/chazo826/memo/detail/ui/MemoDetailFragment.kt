@@ -3,6 +3,7 @@ package com.chazo826.memo.detail.ui
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -11,25 +12,32 @@ import android.provider.MediaStore
 import android.text.Html
 import android.text.Spanned
 import android.text.style.ImageSpan
+import android.util.Log
 import android.view.*
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.FileProvider
+import androidx.core.text.getSpans
+import androidx.core.text.toSpanned
 import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import com.chazo826.core.dagger.android.DaggerFragment
 import com.chazo826.core.dagger.constants.RequestCodeConsts
 import com.chazo826.core.dagger.extensions.*
 import com.chazo826.core.dagger.newIntentForCameraImage
-import com.chazo826.core.dagger.utils.GlideImageSpan
 import com.chazo826.core.dagger.utils.createImageFile
 import com.chazo826.core.dagger.viewmodel_factory.CommonViewModelFactory
 import com.chazo826.memo.R
 import com.chazo826.memo.databinding.FragmentMemoDetailBinding
 import com.chazo826.memo.detail.viewmodel.MemoDetailViewModel
 import com.jakewharton.rxbinding3.view.focusChanges
+import com.jakewharton.rxbinding3.widget.textChanges
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import java.io.File
@@ -89,6 +97,15 @@ class MemoDetailFragment : DaggerFragment() {
                 }, TextView.BufferType.SPANNABLE
             )
         })
+
+        disposable += binding.etContent.textChanges()
+            .subscribe {
+                Log.d(this::class.java.simpleName, "EditText.ToString(): ${binding.etContent.text} ")
+
+                binding.etContent.text.getSpans<ImageSpan>(0, binding.etContent.length()).forEach {
+                    Log.d(this::class.java.simpleName, "ImageSpan.source : ${it.source} ")
+                }
+            }
     }
 
     private fun setupLoading() {
@@ -187,12 +204,19 @@ class MemoDetailFragment : DaggerFragment() {
         }
         activity?.newIntentForCameraImage()?.also {
             val photoFile: File? = try {
-                activity?.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.let(::createImageFile)
+                activity?.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+                    ?.let(::createImageFile)
             } catch (ex: IOException) {
                 null
             }
             val photoUri = photoFile?.let { file ->
-                context?.let { FileProvider.getUriForFile(it, "com.chazo826.note.fileprovider", file) }
+                context?.let {
+                    FileProvider.getUriForFile(
+                        it,
+                        "com.chazo826.note.fileprovider",
+                        file
+                    )
+                }
             }
             it.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
             viewModel.photoUri = photoUri
@@ -215,17 +239,64 @@ class MemoDetailFragment : DaggerFragment() {
     }
 
     private fun addImageSpanToContent(uri: Uri) {
-
-        val imageSpan = context?.let { ImageSpan(it, uri)} ?: return
-
-        binding.etContent?.let {
-            val message = binding.etContent.editableText
-            val selectionStart = it.selectionStart
-            val selectionEnd = it.selectionEnd
-            val text = "IMAGE"
-            message.replace(selectionStart, selectionEnd, text)
-            message.setSpan(imageSpan, selectionStart, selectionStart + text.length, Spanned.SPAN_INCLUSIVE_EXCLUSIVE)
+        context?.let { context ->
+            setImageSpanTarget(uri)?.let {
+                Glide.with(context)
+                    .asDrawable()
+                    .load(uri)
+                    .placeholder(createCircleProgress())
+                    .error(R.drawable.ic_error)
+                    .into(it)
+            }
         }
+    }
+
+    private fun setImageSpanTarget(uri: Uri): CustomTarget<Drawable>? {
+        val editText = binding.etContent
+
+        val message = editText.editableText
+        val selectionStart = editText.selectionStart
+        val text = "IMAGE"
+        message.replace(selectionStart, editText.selectionEnd, text)
+
+        return object : CustomTarget<Drawable>() {
+            override fun onLoadCleared(placeholder: Drawable?) {
+                context?.let { context ->
+                    val imageSpan = ImageSpan(context, uri)
+
+                    message.setSpan(
+                        imageSpan,
+                        selectionStart,
+                        selectionStart + text.length,
+                        Spanned.SPAN_INCLUSIVE_EXCLUSIVE
+                    )
+                }
+            }
+
+            override fun onResourceReady(
+                resource: Drawable,
+                transition: Transition<in Drawable>?
+            ) {
+                context?.let { context ->
+                    val imageSpan = ImageSpan(context, uri)
+
+                    message.setSpan(
+                        imageSpan,
+                        selectionStart,
+                        selectionStart + text.length,
+                        Spanned.SPAN_INCLUSIVE_EXCLUSIVE
+                    )
+                }
+            }
+        }
+    }
+
+    private fun createCircleProgress(): Drawable {
+        val circularProgressDrawable = CircularProgressDrawable(requireContext())
+        circularProgressDrawable.strokeWidth = 5f
+        circularProgressDrawable.centerRadius = 30f
+        circularProgressDrawable.start()
+        return circularProgressDrawable
     }
 
     companion object {

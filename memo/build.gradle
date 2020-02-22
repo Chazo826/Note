@@ -20,7 +20,7 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -51,6 +51,7 @@ dependencies {
     implementation libraries.androidx.base.core
     implementation libraries.androidx.base.appcompat
     implementation libraries.androidx.base.constraintlayout
+    implementation libraries.androidx.base.swiperefreshlayout
 
     implementation libraries.androidx.navigation.fragment
     implementation libraries.androidx.navigation.ui
@@ -70,6 +71,9 @@ dependencies {
     implementation libraries.dagger2.android
     implementation libraries.dagger2.androidx
     kapt libraries.dagger2.processor
+
+    implementation libraries.glide.core
+    kapt libraries.glide.compiler
 
     testImplementation libraries.test.androidx.junit
     androidTestImplementation libraries.test.androidx.junit
