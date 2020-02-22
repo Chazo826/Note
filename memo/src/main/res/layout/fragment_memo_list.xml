@@ -8,8 +8,12 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/ry_memos"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
+            android:layout_height="match_parent"
+            android:paddingStart="20dp"
+            android:paddingEnd="10dp"
+            android:paddingTop="10dp"
+            android:orientation="vertical"
+            android:clipToPadding="false"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

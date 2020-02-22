@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.Log
 import android.view.*
 import android.widget.EditText
 import android.widget.Toast
@@ -20,13 +21,10 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.chazo826.core.constants.RequestCodeConsts
-import com.chazo826.core.constants.RequestCodeConsts.PERMISSION_CAMERA
+import com.chazo826.core.constants.RequestCodeConsts.PERMISSION_FOR_CAMERA_AND_ALBUM
 import com.chazo826.core.dagger.android.DaggerFragment
 import com.chazo826.core.dagger.viewmodel_factory.CommonViewModelFactory
-import com.chazo826.core.extensions.checkPermissionBeforeAction
-import com.chazo826.core.extensions.isNotNone
-import com.chazo826.core.extensions.isOK
-import com.chazo826.core.extensions.showToast
+import com.chazo826.core.extensions.*
 import com.chazo826.core.newIntentForCameraImage
 import com.chazo826.core.newIntentForImageAlbum
 import com.chazo826.core.utils.createImageFile
@@ -100,7 +98,7 @@ class MemoDetailFragment : DaggerFragment() {
                     val itemCount = state.itemCount
 
                     if(position < itemCount) {
-                        outRect.right = resources.getDimension(R.dimen.memo_images_right_margin).toInt()
+                        outRect.right = resources.getDimension(R.dimen.memo_images_item_right_margin).toInt()
                     }
                 }
             })
@@ -194,7 +192,7 @@ class MemoDetailFragment : DaggerFragment() {
     private fun moveAlbumForImage() {
         val writeExternalStoragePermission = Manifest.permission.WRITE_EXTERNAL_STORAGE
 
-        checkPermissionBeforeAction(writeExternalStoragePermission, PERMISSION_CAMERA, R.string.camera_permission_rationale) {
+        checkPermissionBeforeAction(writeExternalStoragePermission, PERMISSION_FOR_CAMERA_AND_ALBUM, R.string.camera_permission_rationale) {
             activity?.newIntentForImageAlbum().also {
                 startActivityForResult(it, RequestCodeConsts.IMAGE_ALBUM)
             }
@@ -203,13 +201,13 @@ class MemoDetailFragment : DaggerFragment() {
 
     private fun moveCameraForImage() {
         if (activity?.packageManager?.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY) == false) {
-            showToast("카메라 기능을 지원하지 않는 디바이스입니다.", Toast.LENGTH_SHORT)
+            showToast(R.string.camera_not_support, Toast.LENGTH_SHORT)
             return
         }
 
         val writeExternalStoragePermission = Manifest.permission.WRITE_EXTERNAL_STORAGE
 
-        checkPermissionBeforeAction(writeExternalStoragePermission, PERMISSION_CAMERA, R.string.camera_permission_rationale) {
+        checkPermissionBeforeAction(writeExternalStoragePermission, PERMISSION_FOR_CAMERA_AND_ALBUM, R.string.camera_permission_rationale) {
             activity?.newIntentForCameraImage()?.also {
                 val photoFile: File? = try {
                     activity?.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
@@ -262,6 +260,7 @@ class MemoDetailFragment : DaggerFragment() {
     }
 
     private fun addImageToContent(uri: Uri) {
+        Log.d(TAG, "!!!! uri: $uri")
         viewModel.addImageUri(uri)
     }
 
@@ -271,7 +270,7 @@ class MemoDetailFragment : DaggerFragment() {
         grantResults: IntArray
     ) {
         when (requestCode) {
-            PERMISSION_CAMERA -> {
+            PERMISSION_FOR_CAMERA_AND_ALBUM -> {
                 if (grantResults.firstOrNull() == PackageManager.PERMISSION_DENIED) {
                     showToast(R.string.camera_permission_denied_guide)
                 }

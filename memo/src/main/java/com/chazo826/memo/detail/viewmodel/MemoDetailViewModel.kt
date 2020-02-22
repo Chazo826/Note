@@ -6,7 +6,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import com.chazo826.core.extensions.NONE
-import com.chazo826.core.extensions.TAG
 import com.chazo826.core.extensions.isNotNone
 import com.chazo826.core.viewmodel.StateBaseViewModel
 import com.chazo826.data.memo.MemoRepository
@@ -36,7 +35,6 @@ class MemoDetailViewModel @Inject constructor(
     val isDataExist: MediatorLiveData<Boolean> = MediatorLiveData<Boolean>().apply {
         val merge = {
             value = !title.value.isNullOrBlank() && !content.value.isNullOrEmpty()
-            Log.d(TAG, "hahahah $value")
         }
 
         addSource(title) { merge() }
@@ -80,7 +78,7 @@ class MemoDetailViewModel @Inject constructor(
 
     fun writeMemo() {
         if(title.value != null && content.value != null) {
-            writeMemo(title.value!!, content.value!!, imageUris.value)
+            writeMemo(title.value!!, content.value!!, imageUris.value ?: mutableListOf())
         }
     }
 

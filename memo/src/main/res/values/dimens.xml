@@ -1,4 +1,5 @@
 <resources>
-
-    <dimen name="memo_images_right_margin">10dp</dimen>
+    <dimen name="memos_item_end_margin">10dp</dimen>
+    <dimen name="memos_item_bottom_margin">10dp</dimen>
+    <dimen name="memo_images_item_right_margin">10dp</dimen>
 </resources>
