@@ -37,7 +37,8 @@
                     android:layout_marginTop="20dp"
                     android:background="@null"
                     android:hint="@string/memo_detail_content_hint"
-                    android:paddingBottom="40dp" />
+                    android:paddingBottom="40dp"
+                    android:scrollbars="horizontal"/>
 
             </LinearLayout>
         </ScrollView>

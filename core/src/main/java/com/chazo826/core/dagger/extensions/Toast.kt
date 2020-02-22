@@ -11,7 +11,7 @@ fun Fragment.showToast(@StringRes stringResId: Int, showLength: Int = Toast.LENG
     activity?.showToast(stringResId, showLength)
 }
 
-fun Fragment.showToast(text: String, showLength: Int) {
+fun Fragment.showToast(text: String, showLength: Int = Toast.LENGTH_SHORT) {
     activity?.showToast(text, showLength)
 }
 
@@ -19,6 +19,6 @@ fun FragmentActivity.showToast(@StringRes stringResId: Int, showLength: Int = To
     showToast(getString(stringResId), showLength)
 }
 
-fun FragmentActivity.showToast(text: String, showLength: Int) {
+fun FragmentActivity.showToast(text: String, showLength: Int = Toast.LENGTH_SHORT) {
     Toast.makeText(this, text, showLength).show()
 }

@@ -6,7 +6,7 @@ import androidx.fragment.app.FragmentActivity
 import java.io.File
 
 fun FragmentActivity.newIntentForImageAlbum(): Intent =
-    intent.setAction(Intent.ACTION_GET_CONTENT)
+    Intent(Intent.ACTION_GET_CONTENT)
         .setType("image/*")
 
 fun FragmentActivity.newIntentForCameraImage(): Intent =
