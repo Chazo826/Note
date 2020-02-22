@@ -288,6 +288,11 @@ class MemoDetailFragment : DaggerFragment() {
         }
     }
 
+    override fun onDestroyView() {
+        disposable.clear()
+        super.onDestroyView()
+    }
+
     companion object {
         const val EXTRA_MEMO_UID = "extra_memo_uid"
         fun newBundle(uid: Long): Bundle {
