@@ -1,7 +1,7 @@
 package com.chazo826.data.memo.cache
 
 import android.net.Uri
-import androidx.paging.PositionalDataSource
+import androidx.paging.DataSource
 import com.chazo826.data.memo.MemoRepository
 import com.chazo826.data.memo.model.Memo
 import io.reactivex.Completable
@@ -11,7 +11,7 @@ import javax.inject.Inject
 class MemoCacheDataSource @Inject constructor(
     private val memoDao: MemoDao
 ): MemoRepository {
-    override fun fetchMemoPaginationByDate(): PositionalDataSource<Memo> {
+    override fun fetchMemoPaginationByDate(): DataSource.Factory<Int, Memo> {
         return memoDao.fetchMemosByDate()
     }
 

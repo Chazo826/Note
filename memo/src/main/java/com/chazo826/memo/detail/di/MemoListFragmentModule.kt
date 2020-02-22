@@ -1,8 +1,8 @@
 package com.chazo826.memo.detail.di
 
 import androidx.lifecycle.ViewModel
-import com.chazo826.core.dagger.extensions.NONE
 import com.chazo826.core.dagger.scope.ViewModelKey
+import com.chazo826.core.extensions.NONE
 import com.chazo826.memo.detail.ui.MemoDetailFragment
 import com.chazo826.memo.detail.viewmodel.MemoDetailViewModel
 import dagger.Binds

@@ -1,4 +1,4 @@
-package com.chazo826.core.dagger.utils
+package com.chazo826.core.utils
 
 import java.io.File
 import java.io.IOException

@@ -61,6 +61,8 @@ dependencies {
     implementation libraries.androidx.lifecycle.common
     implementation libraries.androidx.lifecycle.extensions
 
+    implementation libraries.androidx.paging.core
+
     implementation libraries.google.material
 
     implementation libraries.rxjava2.kotlin

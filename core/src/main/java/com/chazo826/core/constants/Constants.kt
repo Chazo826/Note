@@ -1,4 +1,4 @@
-package com.chazo826.core.dagger.constants
+package com.chazo826.core.constants
 
 object RequestCodeConsts {
     const val IMAGE_ALBUM = 1000

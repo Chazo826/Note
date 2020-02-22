@@ -1,4 +1,4 @@
-package com.chazo826.core.dagger.extensions
+package com.chazo826.core.extensions
 
 import android.widget.Toast
 import androidx.annotation.StringRes

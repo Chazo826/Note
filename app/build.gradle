@@ -45,6 +45,12 @@ dependencies {
     implementation libraries.androidx.base.constraintlayout
     implementation libraries.androidx.base.swiperefreshlayout
 
+    implementation libraries.androidx.room.core
+    kapt libraries.androidx.room.compiler
+    implementation libraries.androidx.room.rxjava2
+
+    implementation libraries.google.material
+
     implementation libraries.dagger2.core
     kapt libraries.dagger2.compiler
 
@@ -55,10 +61,6 @@ dependencies {
     implementation libraries.rxjava2.kotlin
     implementation libraries.rxjava2.android
     implementation libraries.rxjava2.binding
-
-    implementation libraries.androidx.room.core
-    kapt libraries.androidx.room.compiler
-    implementation libraries.androidx.room.rxjava2
 
     implementation libraries.glide.core
     kapt libraries.glide.compiler

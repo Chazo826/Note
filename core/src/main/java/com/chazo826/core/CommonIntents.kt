@@ -1,9 +1,8 @@
-package com.chazo826.core.dagger
+package com.chazo826.core
 
 import android.content.Intent
 import android.provider.MediaStore
 import androidx.fragment.app.FragmentActivity
-import java.io.File
 
 fun FragmentActivity.newIntentForImageAlbum(): Intent =
     Intent(Intent.ACTION_GET_CONTENT)

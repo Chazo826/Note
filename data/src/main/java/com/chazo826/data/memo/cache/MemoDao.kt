@@ -1,6 +1,6 @@
 package com.chazo826.data.memo.cache
 
-import androidx.paging.PositionalDataSource
+import androidx.paging.DataSource
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
@@ -13,7 +13,7 @@ import io.reactivex.Single
 interface MemoDao {
 
     @Query("SELECT * FROM memo order BY updatedAt DESC")
-    fun fetchMemosByDate(): PositionalDataSource<Memo>
+    fun fetchMemosByDate(): DataSource.Factory<Int, Memo>
 
     @Query("SELECT * FROM memo WHERE uid == :uid")
     fun fetchMemo(uid: Long): Single<Memo>

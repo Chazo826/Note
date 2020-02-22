@@ -1,4 +1,4 @@
-package com.chazo826.core.dagger.viewmodel
+package com.chazo826.core.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

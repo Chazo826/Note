@@ -19,14 +19,14 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
+import com.chazo826.core.constants.RequestCodeConsts
+import com.chazo826.core.constants.RequestCodeConsts.PERMISSION_CAMERA
 import com.chazo826.core.dagger.android.DaggerFragment
-import com.chazo826.core.dagger.constants.RequestCodeConsts
-import com.chazo826.core.dagger.constants.RequestCodeConsts.PERMISSION_CAMERA
-import com.chazo826.core.dagger.extensions.*
-import com.chazo826.core.dagger.newIntentForCameraImage
-import com.chazo826.core.dagger.newIntentForImageAlbum
-import com.chazo826.core.dagger.utils.createImageFile
 import com.chazo826.core.dagger.viewmodel_factory.CommonViewModelFactory
+import com.chazo826.core.extensions.*
+import com.chazo826.core.newIntentForCameraImage
+import com.chazo826.core.newIntentForImageAlbum
+import com.chazo826.core.utils.createImageFile
 import com.chazo826.memo.R
 import com.chazo826.memo.databinding.FragmentMemoDetailBinding
 import com.chazo826.memo.detail.adapter.AttachImageAdapter
@@ -191,7 +191,7 @@ class MemoDetailFragment : DaggerFragment() {
     private fun moveAlbumForImage() {
         val writeExternalStoragePermission = Manifest.permission.WRITE_EXTERNAL_STORAGE
 
-        checkPermissionBeforeAction(writeExternalStoragePermission) {
+        checkPermissionBeforeAction(writeExternalStoragePermission, PERMISSION_CAMERA) {
             activity?.newIntentForImageAlbum().also {
                 startActivityForResult(it, RequestCodeConsts.IMAGE_ALBUM)
             }
@@ -206,7 +206,7 @@ class MemoDetailFragment : DaggerFragment() {
 
         val writeExternalStoragePermission = Manifest.permission.WRITE_EXTERNAL_STORAGE
 
-        checkPermissionBeforeAction(writeExternalStoragePermission) {
+        checkPermissionBeforeAction(writeExternalStoragePermission, PERMISSION_CAMERA) {
             activity?.newIntentForCameraImage()?.also {
                 val photoFile: File? = try {
                     activity?.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
@@ -231,12 +231,12 @@ class MemoDetailFragment : DaggerFragment() {
         }
     }
 
-    private fun checkPermissionBeforeAction(permission: String, action: () -> Unit) {
+    private fun checkPermissionBeforeAction(permission: String, requestCode: Int, action: () -> Unit) {
         if (!isPermissionGranted(permission)) {
             if (shouldShowRequestPermissionRationale(permission)) {
                 showPermissionRationale(R.string.app_name)
             }
-            requestPermissions(arrayOf(permission), PERMISSION_CAMERA)
+            requestPermissions(arrayOf(permission), requestCode)
         } else {
             action()
         }

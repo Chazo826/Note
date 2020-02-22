@@ -1,4 +1,4 @@
-package com.chazo826.core.dagger.extensions
+package com.chazo826.core.extensions
 
 val Long.Companion.NONE: Long
     get() = -1L

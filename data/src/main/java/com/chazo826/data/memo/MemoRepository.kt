@@ -1,14 +1,14 @@
 package com.chazo826.data.memo
 
 import android.net.Uri
-import androidx.paging.PositionalDataSource
+import androidx.paging.DataSource
 import com.chazo826.data.memo.model.Memo
 import io.reactivex.Completable
 import io.reactivex.Single
 
 interface MemoRepository {
 
-    fun fetchMemoPaginationByDate(): PositionalDataSource<Memo>
+    fun fetchMemoPaginationByDate(): DataSource.Factory<Int, Memo>
 
     fun fetchMemo(uid: Long): Single<Memo>
 

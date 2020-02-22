@@ -1,4 +1,4 @@
-package com.chazo826.core.dagger.extensions
+package com.chazo826.core.extensions
 
 import android.content.pm.PackageManager
 import androidx.annotation.StringRes
