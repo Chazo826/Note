@@ -19,7 +19,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 
 class AttachImageAdapter(
-    private val viewDisposable: CompositeDisposable,
+    private val disposable: CompositeDisposable,
     private val onDelete: (position: Int) -> Unit
 ): ListAdapter<Uri, AttachImageAdapter.ViewHolder>(DIFF_CALLBACK){
 
@@ -30,7 +30,7 @@ class AttachImageAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(viewDisposable, parent)
+        return ViewHolder(disposable, parent)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -53,7 +53,7 @@ class AttachImageAdapter(
         }
     }
 
-    class ViewHolder(private val viewDisposable: CompositeDisposable, parent: ViewGroup): RecyclerView.ViewHolder(
+    class ViewHolder(private val disposable: CompositeDisposable, parent: ViewGroup): RecyclerView.ViewHolder(
         LayoutInflater.from(parent.context).inflate(R.layout.item_memo_attach_image, parent, false)
     ) {
         private val binding: ItemMemoAttachImageBinding? = DataBindingUtil.bind(itemView)
@@ -69,7 +69,7 @@ class AttachImageAdapter(
                     .into(it)
             }
             binding?.ivRemove?.let {
-                viewDisposable += it.clicks()
+                disposable += it.clicks()
                     .subscribe {
                         onDelete()
                     }
