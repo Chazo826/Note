@@ -80,4 +80,9 @@ abstract class StateBaseViewModel : ViewModel() {
             observable
         }
     }
+
+    override fun onCleared() {
+        disposable.clear()
+        super.onCleared()
+    }
 }
