@@ -1,8 +1,8 @@
 package com.chazo826.note
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.chazo826.memo.memo.MemoActivityIntents.newIntentForMemoActivity
+import androidx.appcompat.app.AppCompatActivity
+import com.chazo826.memo.main.MemoIntents.newIntentForMemoActivity
 
 class MainActivity : AppCompatActivity() {
 

@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.Log
 import android.view.*
 import android.widget.EditText
 import android.widget.Toast
@@ -23,10 +24,7 @@ import com.chazo826.core.constants.RequestCodeConsts
 import com.chazo826.core.constants.RequestCodeConsts.PERMISSION_FOR_CAMERA_AND_ALBUM
 import com.chazo826.core.dagger.android.DaggerFragment
 import com.chazo826.core.dagger.viewmodel_factory.CommonViewModelFactory
-import com.chazo826.core.extensions.checkPermissionBeforeAction
-import com.chazo826.core.extensions.isNotNone
-import com.chazo826.core.extensions.isOK
-import com.chazo826.core.extensions.showToast
+import com.chazo826.core.extensions.*
 import com.chazo826.core.newIntentForCameraImage
 import com.chazo826.core.newIntentForImageAlbum
 import com.chazo826.core.utils.createImageFile
@@ -35,6 +33,7 @@ import com.chazo826.memo.databinding.FragmentMemoDetailBinding
 import com.chazo826.memo.detail.adapter.AttachImageAdapter
 import com.chazo826.memo.detail.viewmodel.MemoDetailViewModel
 import com.jakewharton.rxbinding3.view.focusChanges
+import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import java.io.File
@@ -82,9 +81,7 @@ class MemoDetailFragment : DaggerFragment() {
     }
 
     private fun setupImages() {
-        imagesAdapter =  AttachImageAdapter(disposable) {
-            viewModel.removeImageUri(it)
-        }
+        imagesAdapter = AttachImageAdapter(disposable, createDeleteListener())
 
         binding.ryPictures.apply {
             adapter = imagesAdapter
@@ -99,7 +96,7 @@ class MemoDetailFragment : DaggerFragment() {
                     val position = parent.getChildAdapterPosition(view)
                     val itemCount = state.itemCount
 
-                    if(position < itemCount) {
+                    if (position < itemCount) {
                         outRect.right = resources.getDimension(R.dimen.memo_images_item_right_margin).toInt()
                     }
                 }
@@ -194,7 +191,11 @@ class MemoDetailFragment : DaggerFragment() {
     private fun moveAlbumForImage() {
         val writeExternalStoragePermission = Manifest.permission.WRITE_EXTERNAL_STORAGE
 
-        checkPermissionBeforeAction(writeExternalStoragePermission, PERMISSION_FOR_CAMERA_AND_ALBUM, R.string.camera_permission_rationale) {
+        checkPermissionBeforeAction(
+            writeExternalStoragePermission,
+            PERMISSION_FOR_CAMERA_AND_ALBUM,
+            R.string.camera_permission_rationale
+        ) {
             activity?.newIntentForImageAlbum().also {
                 startActivityForResult(it, RequestCodeConsts.IMAGE_ALBUM)
             }
@@ -209,7 +210,11 @@ class MemoDetailFragment : DaggerFragment() {
 
         val writeExternalStoragePermission = Manifest.permission.WRITE_EXTERNAL_STORAGE
 
-        checkPermissionBeforeAction(writeExternalStoragePermission, PERMISSION_FOR_CAMERA_AND_ALBUM, R.string.camera_permission_rationale) {
+        checkPermissionBeforeAction(
+            writeExternalStoragePermission,
+            PERMISSION_FOR_CAMERA_AND_ALBUM,
+            R.string.camera_permission_rationale
+        ) {
             activity?.newIntentForCameraImage()?.also {
                 val photoFile: File? = try {
                     activity?.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
@@ -252,7 +257,7 @@ class MemoDetailFragment : DaggerFragment() {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             RequestCodeConsts.IMAGE_ALBUM -> if (resultCode.isOK()) {
-                data?.data?.let{
+                data?.data?.let {
                     context?.contentResolver?.takePersistableUriPermission(it, Intent.FLAG_GRANT_READ_URI_PERMISSION)
                     addImageToContent(it)
                 }

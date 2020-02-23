@@ -1,4 +1,4 @@
-package com.chazo826.memo.memo
+package com.chazo826.memo.main
 
 import android.os.Bundle
 import android.view.MenuItem

@@ -1,4 +1,4 @@
-package com.chazo826.memo.memo.di
+package com.chazo826.memo.main.di
 
 import dagger.Module
 

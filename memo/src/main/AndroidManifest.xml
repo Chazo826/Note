@@ -12,7 +12,7 @@
 
     <application>
         <activity
-            android:name=".memo.MemoActivity"
+            android:name=".main.MemoActivity"
             android:theme="@style/AppTheme.NoActionBar">
 
 <!--            <intent-filter>-->
