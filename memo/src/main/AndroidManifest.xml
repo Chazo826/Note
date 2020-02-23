@@ -11,16 +11,6 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application>
-        <activity
-            android:name=".main.MemoActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-
-<!--            <intent-filter>-->
-<!--                <category android:name="android.intent.category.APP_GALLERY" />-->
-<!--                <category android:name="android.intent.category.DEFAULT" />-->
-<!--            </intent-filter>-->
-        </activity>
-
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.chazo826.note.fileprovider"
@@ -31,6 +21,15 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+
+        <activity
+            android:name=".main.MemoActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <service android:name=".main.service.CameraImageDeleteIntentService"
+            android:exported="false"/>
+
+
     </application>
 
 </manifest>

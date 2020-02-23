@@ -32,8 +32,8 @@ import com.chazo826.memo.R
 import com.chazo826.memo.databinding.FragmentMemoDetailBinding
 import com.chazo826.memo.detail.adapter.AttachImageAdapter
 import com.chazo826.memo.detail.viewmodel.MemoDetailViewModel
+import com.chazo826.memo.main.MemoIntents.newIntentForCameraImageDeleteIntentService
 import com.jakewharton.rxbinding3.view.focusChanges
-import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import java.io.File
@@ -106,6 +106,17 @@ class MemoDetailFragment : DaggerFragment() {
         viewModel.imageUris.observe(viewLifecycleOwner, Observer {
             imagesAdapter?.submitList(it)
         })
+    }
+
+    private fun createDeleteListener(): (Uri) -> Unit = { uri: Uri ->
+        viewModel.removeImageUri(uri)
+        deleteImageExternal(listOf(uri))
+    }
+
+    private fun deleteImageExternal(uri: List<Uri>) {
+        activity?.apply {
+            startService(newIntentForCameraImageDeleteIntentService(uri))
+        }
     }
 
 
@@ -264,6 +275,7 @@ class MemoDetailFragment : DaggerFragment() {
             }
 
             RequestCodeConsts.IMAGE_CAMERA -> if (resultCode.isOK()) {
+                Log.d(TAG, "${data}")
                 viewModel.photoUri?.let(::addImageToContent)
             }
         }
@@ -289,6 +301,7 @@ class MemoDetailFragment : DaggerFragment() {
     }
 
     override fun onDestroyView() {
+        viewModel.imageUris.value?.let { deleteImageExternal(it) }
         disposable.clear()
         super.onDestroyView()
     }
