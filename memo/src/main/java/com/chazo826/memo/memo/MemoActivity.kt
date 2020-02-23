@@ -3,10 +3,8 @@ package com.chazo826.memo.memo
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.navigation.NavController
-import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import com.chazo826.core.dagger.android.DaggerAppCompatActivity
 import com.chazo826.memo.R

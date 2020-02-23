@@ -3,7 +3,6 @@ package com.chazo826.memo.list.adapter
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.net.Uri
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
@@ -12,7 +11,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bumptech.glide.Glide
-import com.chazo826.core.extensions.TAG
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.chazo826.data.memo.model.Memo
 import com.chazo826.memo.R
 import com.jakewharton.rxbinding3.view.clicks
@@ -32,7 +31,7 @@ class MemoPagedAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        getItem(position)?.let { holder.bind(it, onItemClick)}
+        getItem(position)?.let { holder.bind(it, onItemClick) }
     }
 
     companion object {
@@ -53,17 +52,14 @@ class MemoPagedAdapter(
     ) {
         fun bind(memo: Memo, onItemClick: (memoUid: Long) -> Unit) = with(itemView) {
             tv_title?.text = memo.title
-            tv_date?.text = SimpleDateFormat("yyyy.mm.dd", Locale.getDefault()).format(
-                Date(
-                    memo.updatedAt ?: 0
-                )
-            )
+            tv_date?.text = SimpleDateFormat("yyyy.MM.dd", Locale.getDefault()).format(memo.updatedAt)
             tv_content?.text = memo.content
 
             memo.pictures?.firstOrNull()?.let { Uri.parse(it) }?.let {
-                Log.d(TAG, "!!!! $it")
                 Glide.with(context)
                     .load(it)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true)
                     .placeholder(createCircleProgress(context))
                     .error(R.drawable.ic_error)
                     .into(iv_preview)

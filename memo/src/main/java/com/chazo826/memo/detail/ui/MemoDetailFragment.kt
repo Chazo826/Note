@@ -9,7 +9,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
-import android.util.Log
 import android.view.*
 import android.widget.EditText
 import android.widget.Toast
@@ -24,7 +23,10 @@ import com.chazo826.core.constants.RequestCodeConsts
 import com.chazo826.core.constants.RequestCodeConsts.PERMISSION_FOR_CAMERA_AND_ALBUM
 import com.chazo826.core.dagger.android.DaggerFragment
 import com.chazo826.core.dagger.viewmodel_factory.CommonViewModelFactory
-import com.chazo826.core.extensions.*
+import com.chazo826.core.extensions.checkPermissionBeforeAction
+import com.chazo826.core.extensions.isNotNone
+import com.chazo826.core.extensions.isOK
+import com.chazo826.core.extensions.showToast
 import com.chazo826.core.newIntentForCameraImage
 import com.chazo826.core.newIntentForImageAlbum
 import com.chazo826.core.utils.createImageFile
@@ -250,7 +252,10 @@ class MemoDetailFragment : DaggerFragment() {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             RequestCodeConsts.IMAGE_ALBUM -> if (resultCode.isOK()) {
-                data?.data?.let(::addImageToContent)
+                data?.data?.let{
+                    context?.contentResolver?.takePersistableUriPermission(it, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    addImageToContent(it)
+                }
             }
 
             RequestCodeConsts.IMAGE_CAMERA -> if (resultCode.isOK()) {
@@ -260,7 +265,6 @@ class MemoDetailFragment : DaggerFragment() {
     }
 
     private fun addImageToContent(uri: Uri) {
-        Log.d(TAG, "!!!! uri: $uri")
         viewModel.addImageUri(uri)
     }
 

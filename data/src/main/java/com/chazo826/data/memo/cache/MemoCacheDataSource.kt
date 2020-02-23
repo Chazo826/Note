@@ -6,6 +6,7 @@ import com.chazo826.data.memo.MemoRepository
 import com.chazo826.data.memo.model.Memo
 import io.reactivex.Completable
 import io.reactivex.Single
+import java.util.*
 import javax.inject.Inject
 
 class MemoCacheDataSource @Inject constructor(
@@ -20,12 +21,12 @@ class MemoCacheDataSource @Inject constructor(
     }
 
     override fun insertMemo(title: String, content: String, uri: List<Uri>?): Single<Long> {
-        val updatedAt = System.currentTimeMillis()
+        val updatedAt = GregorianCalendar(TimeZone.getTimeZone("UTC")).timeInMillis
         return memoDao.insert(Memo(title = title, content = content, updatedAt = updatedAt, pictures = uri?.map { it.toString() }))
     }
 
     override fun updateMemo(uid: Long, title: String, content: String, uri: List<Uri>?): Completable {
-        val updatedAt = System.currentTimeMillis()
+        val updatedAt = GregorianCalendar(TimeZone.getTimeZone("UTC")).timeInMillis
         return memoDao.update(Memo(uid, title, updatedAt, content, uri?.map { it.toString() }))
     }
 

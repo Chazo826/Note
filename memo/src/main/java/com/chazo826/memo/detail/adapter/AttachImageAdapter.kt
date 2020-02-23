@@ -12,16 +12,15 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.chazo826.memo.R
 import com.chazo826.memo.databinding.ItemMemoAttachImageBinding
-import com.jakewharton.rxbinding3.view.clicks
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.plusAssign
 
 class AttachImageAdapter(
     private val disposable: CompositeDisposable,
-    private val onDelete: (position: Int) -> Unit
-): ListAdapter<Uri, AttachImageAdapter.ViewHolder>(DIFF_CALLBACK){
+    private val onDelete: (uri: Uri) -> Unit
+) : ListAdapter<Uri, AttachImageAdapter.ViewHolder>(DIFF_CALLBACK) {
 
     private val isEditable: ObservableField<Boolean> = ObservableField(false)
 
@@ -34,14 +33,14 @@ class AttachImageAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        getItem(position).also { holder.bind(it, isEditable) {
-            onDelete(position)
-        } }
+        getItem(position).also {
+            holder.bind(it, isEditable, onDelete)
+        }
     }
 
 
     companion object {
-        private val DIFF_CALLBACK = object: DiffUtil.ItemCallback<Uri>() {
+        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Uri>() {
             override fun areItemsTheSame(oldItem: Uri, newItem: Uri): Boolean {
                 return oldItem.hashCode() == newItem.hashCode()
             }
@@ -53,26 +52,25 @@ class AttachImageAdapter(
         }
     }
 
-    class ViewHolder(private val disposable: CompositeDisposable, parent: ViewGroup): RecyclerView.ViewHolder(
+    class ViewHolder(private val disposable: CompositeDisposable, parent: ViewGroup) : RecyclerView.ViewHolder(
         LayoutInflater.from(parent.context).inflate(R.layout.item_memo_attach_image, parent, false)
     ) {
         private val binding: ItemMemoAttachImageBinding? = DataBindingUtil.bind(itemView)
 
-        fun bind(uri: Uri, isEditable: ObservableField<Boolean>, onDelete: () -> Unit) = with(itemView) {
+        fun bind(uri: Uri, isEditable: ObservableField<Boolean>, onDelete: (uri: Uri) -> Unit) = with(itemView) {
             binding?.isEditable = isEditable
 
             binding?.ivPreview?.let {
                 Glide.with(context)
                     .load(uri)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true)
                     .placeholder(createCircleProgress(context))
                     .error(R.drawable.ic_error)
                     .into(it)
             }
-            binding?.ivRemove?.let {
-                disposable += it.clicks()
-                    .subscribe {
-                        onDelete()
-                    }
+            binding?.ivRemove?.setOnClickListener {
+                onDelete(uri)
             }
 
             Unit

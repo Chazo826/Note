@@ -5,5 +5,6 @@ import androidx.fragment.app.FragmentActivity
 
 object MemoActivityIntents {
 
-    fun FragmentActivity.newIntentForMemoActivity(): Intent = Intent(this, MemoActivity::class.java)
+    fun FragmentActivity.newIntentForMemoActivity(): Intent =
+        Intent(this, MemoActivity::class.java)
 }

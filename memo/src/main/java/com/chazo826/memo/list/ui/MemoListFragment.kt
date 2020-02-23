@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.chazo826.core.constants.RequestCodeConsts
 import com.chazo826.core.dagger.android.DaggerFragment
-import com.chazo826.core.extensions.checkPermissionsBeforeAction
+import com.chazo826.core.extensions.checkPermissionBeforeAction
 import com.chazo826.core.extensions.showToast
 import com.chazo826.memo.R
 import com.chazo826.memo.databinding.FragmentMemoListBinding
@@ -76,9 +76,13 @@ class MemoListFragment : DaggerFragment() {
             adapter = memosAdapter
         }
 
-        val permissions = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.MANAGE_DOCUMENTS)
+        val permission = Manifest.permission.WRITE_EXTERNAL_STORAGE
 
-        checkPermissionsBeforeAction(permissions, RequestCodeConsts.PERMISSION_FOR_EXTERNAL_STORAGE, R.string.memos_image_permission_rationale) {
+        checkPermissionBeforeAction(
+            permission,
+            RequestCodeConsts.PERMISSION_FOR_EXTERNAL_STORAGE,
+            R.string.memos_image_permission_rationale
+        ) {
             bindMemos()
         }
     }
@@ -95,7 +99,7 @@ class MemoListFragment : DaggerFragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when(item.itemId) {
+        return when (item.itemId) {
             R.id.action_add -> {
                 findNavController().navigate(R.id.addMemo)
                 true
@@ -110,9 +114,9 @@ class MemoListFragment : DaggerFragment() {
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
-        when(requestCode) {
+        when (requestCode) {
             RequestCodeConsts.PERMISSION_FOR_EXTERNAL_STORAGE -> {
-                if(grantResults.firstOrNull() == PackageManager.PERMISSION_DENIED) {
+                if (grantResults.firstOrNull() == PackageManager.PERMISSION_DENIED) {
                     showToast(R.string.memos_image_permission_denied_guide)
                 }
                 bindMemos()

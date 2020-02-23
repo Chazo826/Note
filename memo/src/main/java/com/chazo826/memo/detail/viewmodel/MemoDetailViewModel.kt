@@ -62,22 +62,25 @@ class MemoDetailViewModel @Inject constructor(
     }
 
     fun addImageUri(uri: Uri) {
-        val uris = mutableListOf<Uri>().apply {
-            imageUris.value?.let { addAll(it) }
-            add(uri)
-        }
+        val uris = mutableListOf<Uri>()
+        imageUris.value?.filter { it != uri }?.let { uris.addAll(it) }
+        uris.add(uri)
+
         _imageUris.value = uris
     }
 
-    fun removeImageUri(index: Int) {
-        val uris = mutableListOf<Uri>().apply {
-            imageUris.value?.let { addAll(it.filterIndexed { i, _ -> i != index }) }
+    fun removeImageUri(uri: Uri) {
+        val uris = mutableListOf<Uri>()
+        imageUris.value?.let {
+            it.toMutableList().also { it.remove(uri) }
+        }?.also {
+            uris.addAll(it)
         }
         _imageUris.value = uris
     }
 
     fun writeMemo() {
-        if(title.value != null && content.value != null) {
+        if (title.value != null && content.value != null) {
             writeMemo(title.value!!, content.value!!, imageUris.value ?: mutableListOf())
         }
     }

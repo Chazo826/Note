@@ -28,18 +28,20 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
+                android:textSize="16sp"
+                android:textStyle="bold"
                 tools:text="제목" />
 
             <TextView
                 android:id="@+id/tv_date"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
                 android:ellipsize="end"
                 android:maxLines="1"
+                android:textSize="12sp"
                 app:layout_constrainedWidth="true"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/tv_title"
+                app:layout_constraintStart_toStartOf="@id/tv_title"
                 app:layout_constraintTop_toBottomOf="@id/tv_title"
                 tools:text="2020.02.22" />
 
@@ -65,7 +67,9 @@
                 android:layout_margin="10dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintDimensionRatio="3:4"
-                app:layout_constraintTop_toBottomOf="@id/tv_content" />
+                app:layout_constraintTop_toBottomOf="@id/tv_content"
+                android:adjustViewBounds="true"
+                android:scaleType="centerCrop" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
