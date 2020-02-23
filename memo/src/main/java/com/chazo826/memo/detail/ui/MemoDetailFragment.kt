@@ -306,9 +306,13 @@ class MemoDetailFragment : DaggerFragment() {
     }
 
     override fun onDestroyView() {
-        viewModel.imageUris.value?.filter { !viewModel.savedImageUris.contains(it) }?.let { deleteImageExternal(it) }
         disposable.clear()
         super.onDestroyView()
+    }
+
+    override fun onDestroy() {
+        viewModel.imageUris.value?.filter { !viewModel.savedImageUris.contains(it) }?.let { deleteImageExternal(it) }
+        super.onDestroy()
     }
 
     companion object {

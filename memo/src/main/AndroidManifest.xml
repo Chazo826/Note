@@ -24,7 +24,8 @@
 
         <activity
             android:name=".main.MemoActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:configChanges="orientation|screenSize|keyboardHidden" />
 
         <service android:name=".main.service.CameraImageDeleteIntentService"
             android:exported="false"/>
