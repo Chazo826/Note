@@ -1,5 +1,6 @@
 def libraries = [:]
 
+// region androidx
 def androidx = [:]
 
 def base = [:]
@@ -27,10 +28,11 @@ androidx.room = room
 
 def paging = [:]
 paging.core = "androidx.paging:paging-runtime:$versions.androidx.paging"
-
+paging.rxjava2 = "androidx.paging:paging-rxjava2:$versions.androidx.paging"
 androidx.paging = paging
 
 libraries.androidx = androidx
+// endregion androidx
 
 def databinding = [:]
 databinding.compiler = "com.android.databinding:compiler:$versions.databinding"

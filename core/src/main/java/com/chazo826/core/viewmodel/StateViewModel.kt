@@ -14,7 +14,7 @@ abstract class StateBaseViewModel : ViewModel() {
 
     protected val disposable by lazy { CompositeDisposable() }
 
-    private val _loadingState = MutableLiveData<Boolean>()
+    protected val _loadingState = MutableLiveData<Boolean>()
     val loadingState: LiveData<Boolean>
         get() = _loadingState
 

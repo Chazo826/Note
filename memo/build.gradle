@@ -62,6 +62,7 @@ dependencies {
     implementation libraries.androidx.lifecycle.extensions
 
     implementation libraries.androidx.paging.core
+    implementation libraries.androidx.paging.rxjava2
 
     implementation libraries.google.material
 

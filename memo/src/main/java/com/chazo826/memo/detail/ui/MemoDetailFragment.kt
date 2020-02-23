@@ -14,16 +14,16 @@ import android.view.*
 import android.widget.EditText
 import android.widget.Toast
 import androidx.core.content.FileProvider
-import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.chazo826.core.constants.RequestCodeConsts
 import com.chazo826.core.constants.RequestCodeConsts.PERMISSION_FOR_CAMERA_AND_ALBUM
 import com.chazo826.core.dagger.android.DaggerFragment
-import com.chazo826.core.dagger.viewmodel_factory.CommonViewModelFactory
 import com.chazo826.core.extensions.*
 import com.chazo826.core.newIntentForCameraImage
 import com.chazo826.core.newIntentForImageAlbum
@@ -33,6 +33,7 @@ import com.chazo826.memo.databinding.FragmentMemoDetailBinding
 import com.chazo826.memo.detail.adapter.AttachImageAdapter
 import com.chazo826.memo.detail.viewmodel.MemoDetailViewModel
 import com.chazo826.memo.main.MemoIntents.newIntentForCameraImageDeleteIntentService
+import com.chazo826.memo.main.MemoMainViewModel
 import com.jakewharton.rxbinding3.view.focusChanges
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
@@ -43,11 +44,15 @@ import javax.inject.Inject
 class MemoDetailFragment : DaggerFragment() {
 
     @Inject
-    lateinit var viewModelFactory: CommonViewModelFactory
+    lateinit var viewModelFactory: ViewModelProvider.Factory
 
     private lateinit var binding: FragmentMemoDetailBinding
 
     private val viewModel: MemoDetailViewModel by viewModels { viewModelFactory }
+
+    private val mainViewModel: MemoMainViewModel by lazy {
+        ViewModelProviders.of(this, viewModelFactory).get(MemoMainViewModel::class.java)
+    }
 
     private val disposable by lazy { CompositeDisposable() }
 
@@ -77,6 +82,13 @@ class MemoDetailFragment : DaggerFragment() {
         viewModel.menuInvalidate.observe(viewLifecycleOwner, Observer {
             activity?.invalidateOptionsMenu()
             imagesAdapter?.setIsEditable(viewModel.isEditable)
+        })
+    }
+
+    private fun setupLoading() {
+        viewModel.loadingState.observe(viewLifecycleOwner, Observer {
+            mainViewModel.setLoadingStateValue(it)
+            Log.d("ViewModel", "$mainViewModel")
         })
     }
 
@@ -117,13 +129,6 @@ class MemoDetailFragment : DaggerFragment() {
         activity?.apply {
             startService(newIntentForCameraImageDeleteIntentService(uri))
         }
-    }
-
-
-    private fun setupLoading() {
-        viewModel.loadingState.observe(viewLifecycleOwner, Observer {
-            binding.pgLoading.isVisible = it
-        })
     }
 
     private fun setupEditable() {

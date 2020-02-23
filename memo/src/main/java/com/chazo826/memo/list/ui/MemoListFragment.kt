@@ -4,16 +4,19 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.graphics.Rect
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.chazo826.core.constants.RequestCodeConsts
 import com.chazo826.core.dagger.android.DaggerFragment
+import com.chazo826.core.extensions.TAG
 import com.chazo826.core.extensions.checkPermissionBeforeAction
 import com.chazo826.core.extensions.showToast
 import com.chazo826.memo.R
@@ -21,7 +24,9 @@ import com.chazo826.memo.databinding.FragmentMemoListBinding
 import com.chazo826.memo.detail.ui.MemoDetailFragment
 import com.chazo826.memo.list.adapter.MemoPagedAdapter
 import com.chazo826.memo.list.viewmodel.MemoListViewModel
+import com.chazo826.memo.main.MemoMainViewModel
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.plusAssign
 import javax.inject.Inject
 
 
@@ -33,6 +38,10 @@ class MemoListFragment : DaggerFragment() {
     private lateinit var binding: FragmentMemoListBinding
 
     private val viewModel by viewModels<MemoListViewModel> { viewModelFactory }
+
+    private val mainViewModel: MemoMainViewModel by lazy {
+        ViewModelProviders.of(this, viewModelFactory).get(MemoMainViewModel::class.java)
+    }
 
     private var memosAdapter: MemoPagedAdapter? = null
 
@@ -51,6 +60,13 @@ class MemoListFragment : DaggerFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupMemos()
+        setupLoading()
+    }
+
+    private fun setupLoading() {
+        viewModel.loadingState.observe(viewLifecycleOwner, Observer {
+            mainViewModel.setLoadingStateValue(it)
+        })
     }
 
     private fun setupMemos() {
@@ -88,9 +104,9 @@ class MemoListFragment : DaggerFragment() {
     }
 
     private fun bindMemos() {
-        viewModel.memos.observe(viewLifecycleOwner, Observer {
+        disposable += viewModel.memos.subscribe({
             memosAdapter?.submitList(it)
-        })
+        }, { Log.e(TAG, it.toString())})
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
