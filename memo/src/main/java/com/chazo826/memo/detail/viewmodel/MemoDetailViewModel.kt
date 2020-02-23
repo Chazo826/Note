@@ -22,6 +22,8 @@ class MemoDetailViewModel @Inject constructor(
 
     val content = MutableLiveData<String>()
 
+    val savedImageUris = mutableListOf<Uri>()
+
     private val _isEditable = MutableLiveData<Boolean>(false)
     val isEditable: Boolean
         get() = _isEditable.value == true
@@ -89,7 +91,7 @@ class MemoDetailViewModel @Inject constructor(
         val writeComplete = {
             setIsEditable(false)
         }
-
+        uris?.let { setSavedImages(it) }
         disposable += when (memoUid) {
             Long.NONE -> memoRepository.insertMemo(title, content, uris)
                 .compose(singleStateTransformer())
@@ -120,7 +122,15 @@ class MemoDetailViewModel @Inject constructor(
             .subscribe({
                 title.value = it.title
                 content.value = it.content
-                _imageUris.value = it.pictures?.map { Uri.parse(it) }
+                it.pictures?.map { Uri.parse(it) }?.let { uris ->
+                    _imageUris.value = uris
+                    setSavedImages(uris)
+                }
             }, { Log.e(this::class.java.simpleName, it.toString()) })
+    }
+
+    private fun setSavedImages(uris: List<Uri>) {
+        savedImageUris.clear()
+        savedImageUris.addAll(uris)
     }
 }

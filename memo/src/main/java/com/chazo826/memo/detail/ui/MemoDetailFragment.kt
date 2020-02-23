@@ -6,7 +6,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Rect
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
@@ -241,15 +240,11 @@ class MemoDetailFragment : DaggerFragment() {
                 }
                 val photoUri = photoFile?.let { file ->
                     context?.let {
-                        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-                            Uri.fromFile(file)
-                        } else {
-                            FileProvider.getUriForFile(
-                                it,
-                                "com.chazo826.note.fileprovider",
-                                file
-                            )
-                        }
+                        FileProvider.getUriForFile(
+                            it,
+                            "com.chazo826.note.fileprovider",
+                            file
+                        )
                     }
                 }
                 it.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
@@ -311,7 +306,7 @@ class MemoDetailFragment : DaggerFragment() {
     }
 
     override fun onDestroyView() {
-        viewModel.imageUris.value?.let { deleteImageExternal(it) }
+        viewModel.imageUris.value?.filter { !viewModel.savedImageUris.contains(it) }?.let { deleteImageExternal(it) }
         disposable.clear()
         super.onDestroyView()
     }
